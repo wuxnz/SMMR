@@ -7,9 +7,10 @@ import {
 } from "./dispatcher"
 import { getCurrentTmuxSession, captureTmuxPane } from "./tmux"
 import { startReplyListener, stopReplyListener } from "./reply-listener"
+import { resolveSmmrEnv } from "@oh-my-opencode/utils"
 import type { OpenClawConfig, OpenClawContext, OpenClawPayload, WakeResult } from "./types"
 
-const DEBUG = process.env.OMO_OPENCLAW_DEBUG === "1"
+const DEBUG = resolveSmmrEnv("OPENCLAW_DEBUG") === "1"
 
 function buildWhitelistedContext(context: OpenClawContext): OpenClawContext {
   const result: OpenClawContext = {}
