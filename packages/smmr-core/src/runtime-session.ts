@@ -37,9 +37,18 @@ export class SmmrRuntimeSession {
     this.allowNetwork = settings.allow_network === true
     this.allowMemoryWrites = settings.allow_memory_writes === true
     this.allowResearch = settings.allow_research === true
-    this.controller = this.enabled
-      ? new SmmrController({ objective: options.objective, budget: options.budget, clock: options.clock })
-      : undefined
+    if (!this.enabled) {
+      this.controller = undefined
+    } else {
+      const controllerOptions = { objective: options.objective } as {
+        objective: string
+        budget?: Partial<ControllerBudget>
+        clock?: () => string
+      }
+      if (options.budget !== undefined) controllerOptions.budget = options.budget
+      if (options.clock !== undefined) controllerOptions.clock = options.clock
+      this.controller = new SmmrController(controllerOptions)
+    }
   }
 
   snapshot(): ControllerSnapshot | undefined {

@@ -8,12 +8,16 @@ describe("createEvidenceBundle", () => {
       repository: { framework: "Next.js" },
       relevantFiles: ["src/auth/session.ts"],
       constraints: ["preserve API"],
+      retrievalContext: "### src/auth/session.ts",
+      retrievedSources: ["src/auth/session.ts"],
     })
     expect(bundle.task.description).toBe("Fix the refresh race")
     expect(bundle.repository).toEqual({ framework: "Next.js" })
     expect(bundle.relevantFiles).toEqual(["src/auth/session.ts"])
     expect(bundle.externalDocs).toEqual([])
     expect(bundle.constraints).toEqual(["preserve API"])
+    expect(bundle.retrievalContext).toContain("session.ts")
+    expect(bundle.retrievedSources).toEqual(["src/auth/session.ts"])
   })
 
   test("rejects an empty task description", () => {

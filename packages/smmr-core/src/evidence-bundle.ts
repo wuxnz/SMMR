@@ -7,6 +7,8 @@ export interface EvidenceBundleInput {
   readonly similarIssues?: readonly string[]
   readonly previousExperiences?: readonly string[]
   readonly constraints?: readonly string[]
+  readonly retrievalContext?: string
+  readonly retrievedSources?: readonly string[]
 }
 
 export interface EvidenceBundle {
@@ -18,6 +20,8 @@ export interface EvidenceBundle {
   readonly similarIssues: readonly string[]
   readonly previousExperiences: readonly string[]
   readonly constraints: readonly string[]
+  readonly retrievalContext: string
+  readonly retrievedSources: readonly string[]
 }
 
 function copyList(values: readonly string[] | undefined): readonly string[] {
@@ -36,5 +40,7 @@ export function createEvidenceBundle(input: EvidenceBundleInput): EvidenceBundle
     similarIssues: copyList(input.similarIssues),
     previousExperiences: copyList(input.previousExperiences),
     constraints: copyList(input.constraints),
+    retrievalContext: input.retrievalContext ?? "",
+    retrievedSources: copyList(input.retrievedSources),
   }
 }

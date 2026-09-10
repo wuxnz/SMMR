@@ -1,4 +1,5 @@
 export * from "./context"
+export * from "./core-bundle"
 export * from "./lexical"
 export * from "./structure"
 export * from "./types"
