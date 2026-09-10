@@ -1,4 +1,6 @@
 import { SmmrController, type ControllerBudget, type ControllerSnapshot } from "./controller"
+import type { Evidence } from "./evidence"
+import type { Reflection, WorkflowState } from "./workflow"
 
 export interface SmmrRuntimeSettings {
   readonly enabled?: boolean
@@ -14,6 +16,8 @@ export interface SmmrRuntimeSessionOptions {
   readonly budget?: Partial<ControllerBudget>
   readonly clock?: () => string
 }
+
+export type SmmrOperation = "local" | "network" | "research" | "memory-write"
 
 /** A harness-neutral session boundary for adapters to own and drive. */
 export class SmmrRuntimeSession {
@@ -38,5 +42,38 @@ export class SmmrRuntimeSession {
 
   snapshot(): ControllerSnapshot | undefined {
     return this.controller?.snapshot()
+  }
+
+  advance(): WorkflowState {
+    return this.requireController().advance()
+  }
+
+  retry(action: string): WorkflowState {
+    return this.requireController().retry(action)
+  }
+
+  reflect(reflection: Omit<Reflection, "state">): Reflection {
+    return this.requireController().reflect(reflection)
+  }
+
+  recordEvidence(evidence: Evidence): void {
+    this.requireController().recordEvidence(evidence)
+  }
+
+  async execute<T>(operation: SmmrOperation, action: () => T | Promise<T>): Promise<T> {
+    this.requireOperation(operation)
+    return action()
+  }
+
+  private requireController(): SmmrController {
+    if (this.controller === undefined) throw new Error("SMMR runtime session is disabled")
+    return this.controller
+  }
+
+  private requireOperation(operation: SmmrOperation): void {
+    this.requireController()
+    if (operation === "network" && !this.allowNetwork) throw new Error("SMMR network permission is disabled")
+    if (operation === "research" && !this.allowResearch) throw new Error("SMMR research permission is disabled")
+    if (operation === "memory-write" && !this.allowMemoryWrites) throw new Error("SMMR memory-write permission is disabled")
   }
 }

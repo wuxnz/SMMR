@@ -67,6 +67,11 @@ deterministic controller, exposes the selected model and permission decisions,
 and remains inert until `smmr.enabled` is explicitly true. Host adapters can
 own this session without importing a harness API.
 
+The session exposes bounded `advance`, `retry`, `reflect`, and `recordEvidence`
+operations, plus permission-checked execution for local, network, research,
+and durable-memory work. Adapters must pass external work through this boundary
+instead of silently bypassing SMMR permissions.
+
 ## Current status
 
 SMMR is under active implementation. The harness-neutral intelligence-layer
