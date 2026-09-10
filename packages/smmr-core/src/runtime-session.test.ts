@@ -38,4 +38,19 @@ describe("SmmrRuntimeSession", () => {
     await expect(session.execute("network", () => "should-not-run")).rejects.toThrow("network permission")
     expect(session.advance()).toBe("UNDERSTAND")
   })
+
+  test("routes registered skills through their operation permissions", async () => {
+    const session = new SmmrRuntimeSession({
+      objective: "research",
+      settings: { enabled: true, allow_research: true },
+    })
+
+    await expect(session.runSkill("smmr-research-first", () => "researched")).resolves.toBe("researched")
+    await expect(session.runSkill("smmr-memory-management", () => "written")).rejects.toThrow(
+      "memory-write permission",
+    )
+    await expect(session.runSkill("missing-skill", () => "never")).rejects.toThrow(
+      "Unknown SMMR skill: missing-skill",
+    )
+  })
 })
