@@ -60,6 +60,9 @@ future host adapters:
 
 These are harness-neutral skill assets. OpenCode startup recognition is staged;
 the controller still needs to invoke the skills as part of host integration.
+The canonical registry in `@smmr/core` maps each skill to its required
+operation: research requires `research` permission, memory management requires
+`memory-write`, and the remaining four are local operations.
 
 The harness-neutral runtime boundary is now available as
 `SmmrRuntimeSession` in `@smmr/core`. It combines the opt-in settings with a
