@@ -22,6 +22,7 @@ export interface RuleFileCandidate {
 }
 
 export type RuleSource =
+  | ".smmr/rules"
   | ".omo/rules"
   | ".claude/rules"
   | ".cursor/rules"
@@ -29,6 +30,7 @@ export type RuleSource =
   | ".github/copilot-instructions.md"
   | ".sisyphus/rules"
   | "~/.omo/rules"
+  | "~/.smmr/rules"
   | "~/.opencode/rules"
   | "~/.claude/rules"
   | "~/.sisyphus/rules";

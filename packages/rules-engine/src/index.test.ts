@@ -37,6 +37,20 @@ afterEach(() => {
 });
 
 describe("rules-core", () => {
+  it("discovers canonical .smmr/rules before legacy .omo/rules", () => {
+    const root = createTestRoot("rules-core-smmr")
+    mkdirSync(join(root, ".git"))
+    mkdirSync(join(root, ".smmr", "rules"), { recursive: true })
+    mkdirSync(join(root, ".omo", "rules"), { recursive: true })
+    mkdirSync(join(root, "src"), { recursive: true })
+    writeFileSync(join(root, ".smmr", "rules", "canonical.md"), "canonical")
+    writeFileSync(join(root, ".omo", "rules", "legacy.md"), "legacy")
+
+    const found = findRuleFiles(root, root, join(root, "src", "index.ts"))
+
+    expect(found.map((rule) => rule.source)).toEqual([".smmr/rules", ".omo/rules"])
+  })
+
   it("#given mixed rule sources #when finding rule files #then returns deterministic source-priority order", () => {
     // given
     const root = createTestRoot("rules-core-order");
@@ -267,7 +281,7 @@ describe("rules-core", () => {
 
     // then
     expect(first).toEqual(second);
-    expect(cache.stats()).toEqual({ candidateEntries: 1, directoryEntries: 11 });
+    expect(cache.stats()).toEqual({ candidateEntries: 1, directoryEntries: 13 });
   });
 
   it("#given nested project markers #when finding project root #then memoizes ancestor lookups", () => {
