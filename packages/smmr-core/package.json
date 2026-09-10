@@ -1,0 +1,12 @@
+{
+  "name": "@smmr/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Harness-neutral deterministic controller core for SMMR.",
+  "exports": { ".": { "types": "./index.d.ts", "import": "./src/index.ts" } },
+  "types": "./index.d.ts",
+  "scripts": { "typecheck": "tsgo --noEmit -p tsconfig.json", "test": "bun test src/*.test.ts" },
+  "dependencies": { "zod": "^4.4.3" },
+  "sideEffects": false
+}
