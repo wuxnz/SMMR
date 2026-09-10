@@ -442,6 +442,16 @@
         "bun-types": "1.4.2",
       },
     },
+    "packages/smmr-training": {
+      "name": "@smmr/training",
+      "version": "0.1.0",
+      "dependencies": {
+        "@smmr/eval": "workspace:*",
+      },
+      "devDependencies": {
+        "bun-types": "1.4.2",
+      },
+    },
     "packages/team-core": {
       "name": "@oh-my-opencode/team-core",
       "version": "0.1.0",
@@ -935,6 +945,8 @@
     "@smmr/rag": ["@smmr/rag@workspace:packages/smmr-rag"],
 
     "@smmr/research": ["@smmr/research@workspace:packages/smmr-research"],
+
+    "@smmr/training": ["@smmr/training@workspace:packages/smmr-training"],
 
     "@stablelib/base64": ["@stablelib/base64@1.0.1", "", {}, "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="],
 
