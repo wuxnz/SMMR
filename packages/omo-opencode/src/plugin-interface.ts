@@ -16,7 +16,11 @@ import { createToolExecuteAfterHandler } from "./plugin/tool-execute-after"
 import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
 import { log } from "./shared/logger"
 import { createSmmrChatSession } from "./plugin/smmr-chat-session"
-import { advanceSmmrSessionAfterTool, removeDeletedSmmrSession } from "./plugin/smmr-session-lifecycle"
+import {
+  advanceSmmrSessionAfterTool,
+  assertSmmrSessionCanRunNextSkill,
+  removeDeletedSmmrSession,
+} from "./plugin/smmr-session-lifecycle"
 import { getSmmrSystemPolicy } from "./plugin/smmr-system-policy"
 import { applySmmrModelOverride } from "./plugin/smmr-model-routing"
 
@@ -128,11 +132,15 @@ export function createPluginInterface(args: {
       hooks,
     }),
 
-    "tool.execute.before": createToolExecuteBeforeHandler({
-      ctx,
-      hooks,
-      backgroundManager: managers.backgroundManager,
-    }),
+    "tool.execute.before": async (input, output) => {
+      const session = smmrSessions.get(input.sessionID)
+      if (session !== undefined) await assertSmmrSessionCanRunNextSkill(session)
+      await createToolExecuteBeforeHandler({
+        ctx,
+        hooks,
+        backgroundManager: managers.backgroundManager,
+      })(input, output)
+    },
 
     "tool.execute.after": async (input, output) => {
       await createToolExecuteAfterHandler({ ctx, hooks })(input, output)

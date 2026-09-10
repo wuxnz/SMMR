@@ -240,13 +240,15 @@ defaults are `enabled: false`, `allow_network: false`,
 shared config schema and surfaced by the OpenCode adapter. When enabled,
 startup records the opt-in and permission boundary, and each enabled OpenCode
 chat creates a deterministic runtime session at `DISCOVER`. The runtime can
-now dispatch registered foundational skills through the permission boundary
+now dispatch registered foundational skills through a pre-tool permission boundary
 and inject the bounded operating policy into that session's system context,
 and deterministically selects the next foundational skill from the controller
 state. `runNextSkill` gives adapters a bounded execution primitive that advances
 only after success. OpenCode tool completions consume it and record a verified,
- bounded, credential-redacted output excerpt in the controller-owned observation
-for the active session; failed completions record neither progress nor evidence.
+bounded, credential-redacted output excerpt in the controller-owned observation
+for the active session; restricted research and memory-write skills are rejected
+before host tool execution, and failed completions record neither progress nor
+evidence.
 Specialized research,
 retrieval, verification, and memory operations still need dedicated adapter
 wiring.
