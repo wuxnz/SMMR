@@ -174,6 +174,29 @@ These commands install the compatibility runtime. SMMR remains opt-in: add a
 root `smmr` block with `enabled: true` to activate the OpenCode per-chat
 session bridge. Codex and Senpi do not consume this block yet.
 
+For a project-local OpenCode opt-in, create `.smmr/smmr.jsonc` (or place the
+same block in the compatible `.omo/omo.jsonc` configuration):
+
+```jsonc
+{
+  "smmr": {
+    "enabled": true,
+    "model": "ollama:qwen3.5:4b",
+    "allow_network": false,
+    "allow_research": false,
+    "allow_memory_writes": false
+  }
+}
+```
+
+All permissions default to `false`, even when SMMR is enabled. Local
+repository work remains available; set `allow_research` for external research,
+`allow_network` for network-backed operations, and `allow_memory_writes` only
+when verified experience may be persisted. The configured model is passed to
+the normalized SMMR model boundary; it does not silently fall back to a
+network provider. Remove the block or set `enabled: false` to restore the
+legacy host-only behavior.
+
 ## Local-first design goals
 
 The SMMR target defaults are:
