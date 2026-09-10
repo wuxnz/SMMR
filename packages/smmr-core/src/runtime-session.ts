@@ -1,5 +1,6 @@
 import { SmmrController, type ControllerBudget, type ControllerSnapshot } from "./controller"
 import type { Evidence } from "./evidence"
+import type { EvidenceBundle } from "./evidence-bundle"
 import type { Reflection, WorkflowState } from "./workflow"
 import { getSmmrSkillForState, SMMR_SKILL_REGISTRY, type SmmrSkillDescriptor } from "./skills"
 
@@ -74,6 +75,10 @@ export class SmmrRuntimeSession {
 
   recordEvidence(evidence: Evidence): void {
     this.requireController().recordEvidence(evidence)
+  }
+
+  recordEvidenceBundle(bundle: EvidenceBundle): void {
+    this.requireController().recordEvidenceBundle(bundle)
   }
 
   async execute<T>(operation: SmmrOperation, action: () => T | Promise<T>): Promise<T> {

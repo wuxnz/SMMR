@@ -1,7 +1,14 @@
 import { describe, expect, test } from "bun:test"
 import { SmmrRuntimeSession } from "./runtime-session"
+import { createEvidenceBundle } from "./evidence-bundle"
 
 describe("SmmrRuntimeSession", () => {
+  test("records evidence bundles through the controller boundary", () => {
+    const session = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
+    session.recordEvidenceBundle(createEvidenceBundle({ task: { description: "inspect" } }))
+    expect(session.snapshot()?.evidenceBundles).toHaveLength(1)
+  })
+
   test("keeps absent configuration inert and denies permissions", () => {
     const session = new SmmrRuntimeSession({ objective: "inspect the repository" })
     expect(session.enabled).toBe(false)
