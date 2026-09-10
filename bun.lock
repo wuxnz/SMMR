@@ -393,6 +393,20 @@
         "zod": "^4.4.3",
       },
     },
+    "packages/smmr-core": {
+      "name": "@smmr/core",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.4.3",
+      },
+    },
+    "packages/smmr-models": {
+      "name": "@smmr/models",
+      "version": "0.1.0",
+      "devDependencies": {
+        "bun-types": "1.4.2",
+      },
+    },
     "packages/team-core": {
       "name": "@oh-my-opencode/team-core",
       "version": "0.1.0",
@@ -872,6 +886,10 @@
     "@smithy/util-buffer-from": ["@smithy/util-buffer-from@2.2.0", "", { "dependencies": { "@smithy/is-array-buffer": "^2.2.0", "tslib": "^2.6.2" } }, "sha512-IJdWBbTcMQ6DA0gdNhh/BwrLkDR+ADW5Kr1aZmd4k3DIF6ezMV4R2NIAmT08wQJ3yUK82thHWmC/TnK/wpMMIA=="],
 
     "@smithy/util-utf8": ["@smithy/util-utf8@2.3.0", "", { "dependencies": { "@smithy/util-buffer-from": "^2.2.0", "tslib": "^2.6.2" } }, "sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A=="],
+
+    "@smmr/core": ["@smmr/core@workspace:packages/smmr-core"],
+
+    "@smmr/models": ["@smmr/models@workspace:packages/smmr-models"],
 
     "@stablelib/base64": ["@stablelib/base64@1.0.1", "", {}, "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="],
 
