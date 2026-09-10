@@ -217,8 +217,9 @@ The canonical SMMR config locations are `~/.smmr/smmr.json[c]` and project
 `.smmr/smmr.json[c]` files. The compatibility runtime continues to read the
 corresponding `.omo/omo.json[c]` files when no canonical file is present.
 The shared config core also exposes a no-clobber, journaled migration primitive
-for moving a legacy user file into `~/.smmr/smmr.jsonc`; startup wiring for
-that primitive remains part of host integration.
+for moving a legacy user file into `~/.smmr/smmr.jsonc`. OpenCode checks this
+no-clobber migration during startup and records the result; an existing
+canonical SMMR file is preserved.
 Workspace rule discovery likewise prefers project and user `.smmr/rules`
 directories, while retaining `.omo/rules` as a readable legacy source.
 Boulder state now writes to `.smmr/boulder.json` and reads `.omo/boulder.json`
