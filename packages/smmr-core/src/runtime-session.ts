@@ -1,6 +1,7 @@
 import { SmmrController, type ControllerBudget, type ControllerSnapshot } from "./controller"
 import type { Evidence } from "./evidence"
 import type { EvidenceBundle } from "./evidence-bundle"
+import type { ModelAdapter, ModelRequest, ModelResponse } from "@smmr/models"
 import type { Reflection, WorkflowState } from "./workflow"
 import { getSmmrSkillForState, SMMR_SKILL_REGISTRY, type SmmrSkillDescriptor } from "./skills"
 
@@ -81,6 +82,15 @@ export class SmmrRuntimeSession {
 
   recordEvidenceBundle(bundle: EvidenceBundle): void {
     this.requireController().recordEvidenceBundle(bundle)
+  }
+
+  async completeModel(
+    adapter: ModelAdapter,
+    request: Omit<ModelRequest, "model">,
+  ): Promise<ModelResponse> {
+    const model = this.model
+    if (model === undefined) throw new Error("SMMR model is not configured")
+    return this.execute("local", () => adapter.complete({ ...request, model }))
   }
 
   async execute<T>(operation: SmmrOperation, action: () => T | Promise<T>): Promise<T> {
