@@ -57,7 +57,7 @@ merged:
 | --- | --- | --- |
 | Controller | Implemented | `@smmr/core` deterministic workflow, budgets, loop detection, reflections, evidence |
 | Models | In progress | `@smmr/models` normalized protocol, Ollama adapter, deterministic mock adapter |
-| Memory | Existing foundation | `@oh-my-opencode/memory-core`, being adapted behind SMMR APIs |
+| Memory | In progress | `@smmr/memory` policy, scoring, decay, bounded store; backed by existing memory foundation |
 | RAG | Planned | lexical, structural, test, external, and experience retrieval |
 | Execution | Planned | sandboxed commands, diagnostics, failure taxonomy, repair policies |
 | Research | Planned | bounded web/browser research with source evidence |
@@ -191,7 +191,7 @@ system design rationale is in [`SMMR_PROJECT_OUTLINE.md`](SMMR_PROJECT_OUTLINE.m
 The implementation sequence is:
 
 1. deterministic controller and normalized model protocol;
-2. tripartite memory and write policy;
+2. tripartite memory and write policy (`@smmr/memory`);
 3. repository RAG and evidence bundles;
 4. execution, diagnostics, and repair policies;
 5. bounded research and citation capture;

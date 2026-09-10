@@ -26,6 +26,7 @@
     "packages/memory-core",
     "packages/smmr-core",
     "packages/smmr-models",
+    "packages/smmr-memory",
     "packages/telemetry-core",
     "packages/claude-code-compat-core",
     "packages/skills-loader-core",
