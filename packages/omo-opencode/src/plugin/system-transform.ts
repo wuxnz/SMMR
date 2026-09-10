@@ -25,6 +25,7 @@ export function createSystemTransformHandler(
   defaultMode?: DefaultModeConfig,
   getUltraworkMessage?: (agentName?: string, modelID?: string) => string,
   ultraworkRestoration?: UltraworkRestoration | null,
+  getSmmrPolicy?: (sessionID?: string) => string | undefined,
 ): (
   input: { sessionID?: string; model: { id: string; providerID: string; [key: string]: unknown } },
   output: { system: string[] },
@@ -35,6 +36,11 @@ export function createSystemTransformHandler(
     // is the only seam that knows the model actually selected at runtime, so
     // rebuild the whole body for the runtime model here (issue #5297/#6966).
     reconcileSisyphusRuntimePrompt(output.system, toCanonicalModel(input.model))
+
+    const smmrPolicy = getSmmrPolicy?.(input.sessionID)
+    if (smmrPolicy && !output.system.some((part) => part.includes("<smmr-mode>"))) {
+      output.system.push(smmrPolicy)
+    }
 
     const restoredGuidance = input.sessionID
       ? ultraworkRestoration?.getSystemTransformGuidance?.(input.sessionID, input.model?.id)
