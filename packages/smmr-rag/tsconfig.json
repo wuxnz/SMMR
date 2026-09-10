@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", "module": "ESNext", "moduleResolution": "bundler",
+    "strict": true, "exactOptionalPropertyTypes": true, "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true, "noImplicitReturns": true, "esModuleInterop": true,
+    "skipLibCheck": true, "forceConsistentCasingInFileNames": true,
+    "lib": ["ESNext"], "types": ["bun-types"]
+  },
+  "include": ["src/**/*"]
+}
