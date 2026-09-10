@@ -193,6 +193,8 @@ Boulder state now writes to `.smmr/boulder.json` and reads `.omo/boulder.json`
 when no canonical state exists, preserving active work during migration.
 Team specifications now use `.smmr/teams` and the canonical user `~/.smmr`
 base by default, while discovery falls back to existing `.omo/teams` data.
+Harness-neutral OpenClaw and ast-grep MCP runtime settings now prefer
+`SMMR_*` environment names while retaining their `OMO_*` fallbacks.
 These path changes are compatibility-aware library behavior; they do not yet
 make the SMMR controller the default host runtime.
 
