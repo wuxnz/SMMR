@@ -50,19 +50,19 @@ bounded step.
 
 ## Current status
 
-SMMR is under active implementation. The first intelligence-layer slice is
-merged:
+SMMR is under active implementation. The harness-neutral intelligence-layer
+slices are merged and independently testable:
 
 | Layer | Status | Current surface |
 | --- | --- | --- |
 | Controller | Implemented | `@smmr/core` deterministic workflow, budgets, loop detection, reflections, evidence |
-| Models | In progress | `@smmr/models` normalized protocol, Ollama adapter, deterministic mock adapter |
-| Memory | In progress | `@smmr/memory` policy, scoring, decay, bounded store; backed by existing memory foundation |
-| RAG | In progress | `@smmr/rag` lexical ranking, document graph, related-test mapping, and bounded evidence context |
-| Execution | In progress | `@smmr/execution` verification checks, failure taxonomy, bounded retries, and repair hints |
-| Research | In progress | `@smmr/research` bounded provider contract, deduplication, citations, and evidence budgets |
-| Evaluation | In progress | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
-| Training | In progress | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
+| Models | Implemented | `@smmr/models` normalized protocol, Ollama adapter, deterministic mock adapter |
+| Memory | Implemented | `@smmr/memory` policy, scoring, decay, bounded store; backed by existing memory foundation |
+| RAG | Implemented | `@smmr/rag` lexical ranking, document graph, related-test mapping, and bounded evidence context |
+| Execution | Implemented | `@smmr/execution` verification checks, failure taxonomy, bounded retries, and repair hints |
+| Research | Implemented | `@smmr/research` bounded provider contract, deduplication, citations, and evidence budgets |
+| Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
+| Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, migration primitive, `.smmr/rules`, boulder-state, and team paths |
 | Host integration | Planned | opt-in SMMR configuration and OpenCode adapter wiring |
 
@@ -162,18 +162,20 @@ The current compatibility runtime predates these defaults and still has its
 existing OmO telemetry/configuration behavior. Do not interpret the target
 policy above as claiming that the legacy adapter has already been migrated.
 
-The additive identity migration now reads `~/.smmr/smmr.json[c]` and project
-`.smmr/smmr.json[c]` files first, while continuing to read the corresponding
-`.omo/omo.json[c]` files when no canonical file is present.
+The canonical SMMR config locations are `~/.smmr/smmr.json[c]` and project
+`.smmr/smmr.json[c]` files. The compatibility runtime continues to read the
+corresponding `.omo/omo.json[c]` files when no canonical file is present.
 The shared config core also exposes a no-clobber, journaled migration primitive
-for moving a legacy user file into `~/.smmr/smmr.jsonc`; wiring that primitive
-into each host's startup sequence remains part of host integration.
+for moving a legacy user file into `~/.smmr/smmr.jsonc`; startup wiring for
+that primitive remains part of host integration.
 Workspace rule discovery likewise prefers project and user `.smmr/rules`
 directories, while retaining `.omo/rules` as a readable legacy source.
 Boulder state now writes to `.smmr/boulder.json` and reads `.omo/boulder.json`
 when no canonical state exists, preserving active work during migration.
 Team specifications now use `.smmr/teams` and the canonical user `~/.smmr`
 base by default, while discovery falls back to existing `.omo/teams` data.
+These path changes are compatibility-aware library behavior; they do not yet
+make the SMMR controller the default host runtime.
 
 ## Development
 
@@ -232,7 +234,7 @@ The implementation sequence is:
 6. evaluation and trajectory metrics (`@smmr/eval`);
 7. training scaffolds and trajectory export (`@smmr/training`);
 8. additive identity foundation and local-first migration;
-9. opt-in host integration.
+9. opt-in host integration and startup wiring.
 
 Each stage is delivered as a small, independently tested change. The old OmO
 surface remains readable until the SMMR replacement has equivalent coverage.
