@@ -1,4 +1,5 @@
 import { isTerminalState, nextWorkflowState, type Reflection, type WorkflowState, type WorkflowTransition } from "./workflow"
+import { createEvidenceBundle, type EvidenceBundle } from "./evidence-bundle"
 import type { Evidence } from "./evidence"
 
 export interface ControllerBudget { readonly maxSteps: number; readonly maxRetries: number; readonly maxRepeatedActions: number }
@@ -9,6 +10,7 @@ export interface ControllerSnapshot {
   readonly reflections: readonly Reflection[]
   readonly transitions: readonly WorkflowTransition[]
   readonly evidence: readonly Evidence[]
+  readonly evidenceBundles: readonly EvidenceBundle[]
   readonly exhausted: boolean
 }
 export interface ControllerOptions { readonly objective: string; readonly budget?: Partial<ControllerBudget>; readonly clock?: () => string }
@@ -25,6 +27,7 @@ export class SmmrController {
   #reflections: Reflection[] = []
   #transitions: WorkflowTransition[] = []
   #evidence: Evidence[] = []
+  #evidenceBundles: EvidenceBundle[] = []
   #clock: () => string
 
   constructor(options: ControllerOptions) {
@@ -37,6 +40,7 @@ export class SmmrController {
   }
   get state(): WorkflowState { return this.#state }
   recordEvidence(evidence: Evidence): void { this.#evidence.push(evidence) }
+  recordEvidenceBundle(bundle: EvidenceBundle): void { this.#evidenceBundles.push(createEvidenceBundle(bundle)) }
 
   reflect(reflection: Omit<Reflection, "state">): Reflection {
     const result = { ...reflection, state: this.#state }
@@ -68,7 +72,7 @@ export class SmmrController {
   }
 
   snapshot(): ControllerSnapshot {
-    return { state: this.#state, steps: this.#steps, retries: this.#retries, reflections: [...this.#reflections], transitions: [...this.#transitions], evidence: [...this.#evidence], exhausted: this.#state === "BLOCKED" || this.#steps >= this.budget.maxSteps }
+    return { state: this.#state, steps: this.#steps, retries: this.#retries, reflections: [...this.#reflections], transitions: [...this.#transitions], evidence: [...this.#evidence], evidenceBundles: [...this.#evidenceBundles], exhausted: this.#state === "BLOCKED" || this.#steps >= this.budget.maxSteps }
   }
 
   #transition(to: WorkflowState, reason: WorkflowTransition["reason"]): WorkflowState {
