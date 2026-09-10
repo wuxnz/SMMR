@@ -18,6 +18,7 @@ import { log } from "./shared/logger"
 import { createSmmrChatSession } from "./plugin/smmr-chat-session"
 import { advanceSmmrSessionAfterTool, removeDeletedSmmrSession } from "./plugin/smmr-session-lifecycle"
 import { getSmmrSystemPolicy } from "./plugin/smmr-system-policy"
+import { applySmmrModelOverride } from "./plugin/smmr-model-routing"
 
 import type { CreatedHooks } from "./create-hooks"
 import type { Managers } from "./create-managers"
@@ -93,6 +94,7 @@ export function createPluginInterface(args: {
           })
         }
       }
+      applySmmrModelOverride(input.sessionID, output.message, smmrSessions)
       await chatMessageHandler(input, output)
     },
 
