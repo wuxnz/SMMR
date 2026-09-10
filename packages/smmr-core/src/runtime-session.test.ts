@@ -54,4 +54,19 @@ describe("SmmrRuntimeSession", () => {
       "Unknown SMMR skill: missing-skill",
     )
   })
+
+  test("runs the planned skill and advances only after successful completion", async () => {
+    const session = new SmmrRuntimeSession({
+      objective: "inspect repository",
+      settings: { enabled: true },
+    })
+    await expect(session.runNextSkill((skill) => skill.name)).resolves.toBe("smmr-repository-analysis")
+    expect(session.snapshot()?.state).toBe("UNDERSTAND")
+
+    const failing = new SmmrRuntimeSession({ objective: "inspect repository", settings: { enabled: true } })
+    await expect(failing.runNextSkill(() => Promise.reject(new Error("adapter failed")))).rejects.toThrow(
+      "adapter failed",
+    )
+    expect(failing.snapshot()?.state).toBe("DISCOVER")
+  })
 })
