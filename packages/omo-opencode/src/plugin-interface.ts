@@ -85,6 +85,7 @@ export function createPluginInterface(args: {
           log("[smmr] runtime session created", {
             sessionID: input.sessionID,
             state: session.snapshot()?.state,
+            nextSkill: session.nextSkill()?.name,
             model: session.model,
             allowNetwork: session.allowNetwork,
             allowMemoryWrites: session.allowMemoryWrites,
