@@ -131,7 +131,8 @@ function maybeRunLazyCodexNodeInstaller(invocationName) {
 }
 
 /**
- * Determine which bin name the user invoked us with (oh-my-opencode, oh-my-openagent, omo, lazycodex).
+ * Determine which bin name the user invoked us with (smmr, oh-my-opencode,
+ * oh-my-openagent, omo, lazycodex).
  * Propagated to the compiled CLI binary via OMO_INVOCATION_NAME so it can route accordingly
  * (e.g. `lazycodex` defaults to the Codex install flow).
  * @returns {string}
