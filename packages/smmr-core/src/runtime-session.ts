@@ -78,6 +78,14 @@ export class SmmrRuntimeSession {
     return this.execute(skill.operation, action)
   }
 
+  async runNextSkill<T>(action: (skill: SmmrSkillDescriptor) => T | Promise<T>): Promise<T> {
+    const skill = this.nextSkill()
+    if (!skill) throw new Error("SMMR runtime session has no executable skill")
+    const result = await this.runSkill(skill.name, () => action(skill))
+    this.advance()
+    return result
+  }
+
   private requireController(): SmmrController {
     if (this.controller === undefined) throw new Error("SMMR runtime session is disabled")
     return this.controller
