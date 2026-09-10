@@ -41,4 +41,17 @@ describe("SMMR training scaffolds", () => {
     expect(exportJsonl(records)).toBe(`${JSON.stringify(records[0])}\n`)
     expect(exportJsonl([])).toBe("")
   })
+
+  test("preserves bounded evidence-bundle payloads in training messages", () => {
+    const record = trajectoryToTrainingRecord(trajectory({
+      events: [{
+        kind: "evidence",
+        name: "evidence-bundle",
+        timestamp: "2026-09-10T00:00:03.000Z",
+        payload: { retrievalContext: "verified repository context", retrievedSources: ["src/index.ts"] },
+      }],
+    }))
+    expect(record.messages[1]?.content).toContain("verified repository context")
+    expect(record.messages[1]?.content).toContain("src/index.ts")
+  })
 })
