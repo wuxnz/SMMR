@@ -48,6 +48,19 @@ evidence and trajectory
 The controller owns the process. The model makes judgments inside the current
 bounded step.
 
+The shared skill bundle now includes the six foundational policies used by
+future host adapters:
+
+- `smmr-operating` — bounded state transitions, permissions, and evidence;
+- `smmr-research-first` — cited, budgeted external research;
+- `smmr-repository-analysis` — repository mapping before edits;
+- `smmr-test-first` — observable behavior and focused verification;
+- `smmr-debug-and-repair` — classified failures and bounded retries;
+- `smmr-memory-management` — evidence-gated episodic, semantic, and procedural memory.
+
+These are harness-neutral skill assets. OpenCode startup recognition is staged;
+the controller still needs to invoke the skills as part of host integration.
+
 ## Current status
 
 SMMR is under active implementation. The harness-neutral intelligence-layer
