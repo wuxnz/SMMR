@@ -2,9 +2,15 @@ import { measureTrajectory } from "@smmr/eval"
 import type { Trajectory } from "@smmr/eval"
 import type { TrainingExportOptions, TrainingMessage, TrainingRecord, TrajectoryFilter, TrajectorySelector } from "./types"
 
+const MAX_EVENT_CONTENT_CHARS = 12_000
+
 function eventContent(name: string, payload: Readonly<Record<string, unknown>>): string {
   const text = typeof payload.text === "string" ? payload.text : undefined
-  return text === undefined ? `[${name}]` : `[${name}] ${text}`
+  if (text !== undefined) return `[${name}] ${text}`
+  if (name === "evidence-bundle") {
+    return `[${name}] ${JSON.stringify(payload).slice(0, MAX_EVENT_CONTENT_CHARS)}`
+  }
+  return `[${name}]`
 }
 
 export function trajectoryToTrainingRecord(trajectory: Trajectory): TrainingRecord {
