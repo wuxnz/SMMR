@@ -1,5 +1,6 @@
 import { userInfo } from "node:os"
 import { dirname, join, posix, resolve } from "node:path"
+import { SMMR_CONFIG_BASE, SMMR_WORKSPACE_DIR } from "@oh-my-opencode/utils"
 import { toPosixPath } from "../internal/posix-path"
 import { DEFAULT_READ_FILE_SYSTEM, type OmoConfigEnv, type OmoConfigReadFileSystem } from "./types"
 
@@ -32,12 +33,28 @@ export function resolveUserOmoConfigDirectory(env: OmoConfigEnv = process.env): 
   return join(resolveHomeDir(env), ".omo")
 }
 
+export function resolveUserSmmrConfigDirectory(env: OmoConfigEnv = process.env): string {
+  return join(resolveHomeDir(env), SMMR_WORKSPACE_DIR)
+}
+
+export function resolveUserSmmrConfigPath(env: OmoConfigEnv = process.env): string {
+  return join(resolveUserSmmrConfigDirectory(env), `${SMMR_CONFIG_BASE}.jsonc`)
+}
+
 function detectUserOmoJsonPath(env: OmoConfigEnv, fileSystem: OmoConfigReadFileSystem): string {
   const configDir = resolveUserOmoConfigDirectory(env)
   const jsoncPath = join(configDir, "omo.jsonc")
   if (fileSystem.existsSync(jsoncPath)) return jsoncPath
   const jsonPath = join(configDir, "omo.json")
   return fileSystem.existsSync(jsonPath) ? jsonPath : jsoncPath
+}
+
+function detectUserConfigPath(env: OmoConfigEnv, fileSystem: OmoConfigReadFileSystem): string {
+  const smmrDir = resolveUserSmmrConfigDirectory(env)
+  const smmrJsoncPath = join(smmrDir, `${SMMR_CONFIG_BASE}.jsonc`)
+  if (fileSystem.existsSync(smmrJsoncPath)) return smmrJsoncPath
+  const smmrJsonPath = join(smmrDir, `${SMMR_CONFIG_BASE}.json`)
+  return fileSystem.existsSync(smmrJsonPath) ? smmrJsonPath : detectUserOmoJsonPath(env, fileSystem)
 }
 
 function isSymlinkedProjectPath(path: string, fileSystem: OmoConfigReadFileSystem): boolean {
@@ -61,6 +78,19 @@ function detectOmoJsonPath(dir: string, fileSystem: OmoConfigReadFileSystem): st
   if (isLoadableProjectConfigFile(jsoncPath, fileSystem)) return jsoncPath
   const jsonPath = join(omoDir, "omo.json")
   return isLoadableProjectConfigFile(jsonPath, fileSystem) ? jsonPath : null
+}
+
+function detectSmmrJsonPath(dir: string, fileSystem: OmoConfigReadFileSystem): string | null {
+  const smmrDir = join(dir, SMMR_WORKSPACE_DIR)
+  if (isSymlinkedProjectPath(smmrDir, fileSystem)) return null
+  const jsoncPath = join(smmrDir, `${SMMR_CONFIG_BASE}.jsonc`)
+  if (isLoadableProjectConfigFile(jsoncPath, fileSystem)) return jsoncPath
+  const jsonPath = join(smmrDir, `${SMMR_CONFIG_BASE}.json`)
+  return isLoadableProjectConfigFile(jsonPath, fileSystem) ? jsonPath : null
+}
+
+function detectProjectConfigPath(dir: string, fileSystem: OmoConfigReadFileSystem): string | null {
+  return detectSmmrJsonPath(dir, fileSystem) ?? detectOmoJsonPath(dir, fileSystem)
 }
 
 function realpathOrSelf(path: string, fileSystem: OmoConfigReadFileSystem): string {
@@ -90,7 +120,7 @@ export function findProjectConfigPathsFarthestFirst(
   for (let depth = 0; depth < MAX_PROJECT_CONFIG_DIRECTORY_DEPTH; depth += 1) {
     const isHomeDir = boundaryDirs.includes(currentDir) || realBoundaryDirs.has(realpathOrSelf(currentDir, fileSystem))
     // A home `.omo` is a user layer, so the walk must not also claim it as a project layer.
-    const configPath = isHomeDir ? null : detectOmoJsonPath(currentDir, fileSystem)
+    const configPath = isHomeDir ? null : detectProjectConfigPath(currentDir, fileSystem)
     if (configPath !== null) nearestFirst.push(configPath)
     if (isHomeDir) break
     const parentDir = dirname(currentDir)
@@ -104,7 +134,7 @@ export function findProjectConfigPathsFarthestFirst(
 export function resolveOmoConfigPaths(options: ResolveOmoConfigPathsOptions): readonly OmoConfigPathCandidate[] {
   const fileSystem = options.fileSystem ?? DEFAULT_READ_FILE_SYSTEM
   const env = options.env ?? process.env
-  const userPath = detectUserOmoJsonPath(env, fileSystem)
+  const userPath = detectUserConfigPath(env, fileSystem)
   const projectPaths = findProjectConfigPathsFarthestFirst(options.cwd, resolveHomeDir(env), fileSystem, ACCOUNT_HOME_DIR)
   return [
     { path: userPath, scope: "user" },

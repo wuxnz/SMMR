@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { describe, expect, test } from "bun:test"
-import { resolveHomeDir, resolveOmoConfigPaths, resolveUserOmoConfigDirectory, resolveUserOmoConfigPath } from "./paths"
+import { resolveHomeDir, resolveOmoConfigPaths, resolveUserOmoConfigDirectory, resolveUserOmoConfigPath, resolveUserSmmrConfigPath } from "./paths"
 
 function makeHome(): string {
   const root = mkdtempSync(join(tmpdir(), "omo-config-paths-"))
@@ -84,6 +84,37 @@ describe("resolveUserOmoConfigPath", () => {
 })
 
 describe("resolveOmoConfigPaths user candidate", () => {
+  test("prefers ~/.smmr/smmr.jsonc over the legacy user config", () => {
+    const homeDir = makeHome()
+    const cwd = join(homeDir, "work")
+    mkdirSync(cwd, { recursive: true })
+    writeFile(join(homeDir, ".smmr", "smmr.jsonc"), "{}")
+    writeFile(join(homeDir, ".omo", "omo.jsonc"), "{}")
+
+    expect(resolveOmoConfigPaths({ cwd, env: { HOME: homeDir }, platform: "linux" })[0]).toEqual({
+      path: join(homeDir, ".smmr", "smmr.jsonc"),
+      scope: "user",
+    })
+  })
+
+  test("uses the canonical user path when no file exists", () => {
+    const homeDir = makeHome()
+    expect(resolveUserSmmrConfigPath({ HOME: homeDir })).toBe(join(homeDir, ".smmr", "smmr.jsonc"))
+  })
+
+  test("prefers a project .smmr config over a project .omo config at the same depth", () => {
+    const homeDir = makeHome()
+    const projectDir = join(homeDir, "work")
+    mkdirSync(projectDir, { recursive: true })
+    writeFile(join(projectDir, ".smmr", "smmr.jsonc"), "{}")
+    writeFile(join(projectDir, ".omo", "omo.jsonc"), "{}")
+
+    expect(resolveOmoConfigPaths({ cwd: projectDir, env: { HOME: homeDir }, platform: "linux" })).toContainEqual({
+      path: join(projectDir, ".smmr", "smmr.jsonc"),
+      scope: "project",
+    })
+  })
+
   test("#given ~/.omo/omo.jsonc exists #when resolving candidates #then the user candidate is that file", () => {
     // given
     const homeDir = makeHome()

@@ -162,6 +162,10 @@ The current compatibility runtime predates these defaults and still has its
 existing OmO telemetry/configuration behavior. Do not interpret the target
 policy above as claiming that the legacy adapter has already been migrated.
 
+The additive identity migration now reads `~/.smmr/smmr.json[c]` and project
+`.smmr/smmr.json[c]` files first, while continuing to read the corresponding
+`.omo/omo.json[c]` files when no canonical file is present.
+
 ## Development
 
 Install the repository dependencies with Bun:
