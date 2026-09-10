@@ -46,4 +46,20 @@ describe("advanceSmmrSessionAfterTool", () => {
     expect(sessions.get("s1")?.snapshot()?.evidence[0]?.content).toContain("ok")
     await expect(advanceSmmrSessionAfterTool({ sessionID: "s1", tool: "glob" }, undefined, sessions)).resolves.toBe(false)
   })
+
+  test("redacts credential-shaped values from retained output", async () => {
+    const sessions = new Map([["s1", new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })]])
+    await expect(
+      advanceSmmrSessionAfterTool(
+        { sessionID: "s1", tool: "glob" },
+        { output: "Authorization: Bearer secret-token api_key=abc123 password: hunter2" },
+        sessions,
+      ),
+    ).resolves.toBe(true)
+    const content = sessions.get("s1")?.snapshot()?.evidence[0]?.content ?? ""
+    expect(content).toContain("[redacted]")
+    expect(content).not.toContain("secret-token")
+    expect(content).not.toContain("abc123")
+    expect(content).not.toContain("hunter2")
+  })
 })

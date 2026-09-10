@@ -1,5 +1,12 @@
 import { createEvidence, type SmmrRuntimeSession } from "@smmr/core"
 
+function sanitizeEvidenceExcerpt(value: string): string {
+  return value
+    .replace(/(authorization\s*:\s*bearer\s+)[^\s,;]+/gi, "$1[redacted]")
+    .replace(/(\bbearer\s+)[A-Za-z0-9._~-]+/gi, "$1[redacted]")
+    .replace(/(\b(?:api[-_ ]?key|token|secret|password)\s*[:=]\s*)[^\s,;]+/gi, "$1[redacted]")
+}
+
 export function removeDeletedSmmrSession(
   input: unknown,
   sessions: Map<string, SmmrRuntimeSession>,
@@ -29,7 +36,9 @@ export async function advanceSmmrSessionAfterTool(
   if (!session || typeof input.tool !== "string") return false
   await session.runNextSkill(() => input.tool as string)
   const rawOutput = (output as { output?: unknown } | undefined)?.output
-  const excerpt = typeof rawOutput === "string" ? rawOutput.slice(0, 2_000) : ""
+  const excerpt = typeof rawOutput === "string"
+    ? sanitizeEvidenceExcerpt(rawOutput.slice(0, 2_000))
+    : ""
   session.recordEvidence(
     createEvidence({
       id: `opencode-tool:${input.sessionID}:${input.tool}:${Date.now()}`,
