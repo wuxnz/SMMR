@@ -23,6 +23,7 @@ export type SmmrOperation = "local" | "network" | "research" | "memory-write"
 
 /** A harness-neutral session boundary for adapters to own and drive. */
 export class SmmrRuntimeSession {
+  readonly objective: string
   readonly enabled: boolean
   readonly model: string | undefined
   readonly allowNetwork: boolean
@@ -32,6 +33,7 @@ export class SmmrRuntimeSession {
   readonly skills: readonly SmmrSkillDescriptor[] = SMMR_SKILL_REGISTRY
 
   constructor(options: SmmrRuntimeSessionOptions) {
+    this.objective = options.objective
     const settings = options.settings ?? {}
     this.enabled = settings.enabled === true
     this.model = settings.model

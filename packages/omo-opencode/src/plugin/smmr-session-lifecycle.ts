@@ -1,4 +1,4 @@
-import { createEvidence, type SmmrRuntimeSession } from "@smmr/core"
+import { createEvidence, createEvidenceBundle, type SmmrRuntimeSession } from "@smmr/core"
 
 function sanitizeEvidenceExcerpt(value: string): string {
   return value
@@ -69,5 +69,11 @@ export async function advanceSmmrSessionAfterTool(
       verified: true,
     }),
   )
+  session.recordEvidenceBundle(createEvidenceBundle({
+    task: { description: session.objective },
+    relevantFiles: [input.tool],
+    retrievalContext: excerpt,
+    retrievedSources: [input.tool],
+  }))
   return true
 }

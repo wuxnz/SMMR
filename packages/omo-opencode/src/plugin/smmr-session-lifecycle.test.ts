@@ -66,6 +66,8 @@ describe("advanceSmmrSessionAfterTool", () => {
     await expect(advanceSmmrSessionAfterTool({ sessionID: "s1", tool: "glob" }, { output: "ok" }, sessions)).resolves.toBe(true)
     expect(sessions.get("s1")?.snapshot()?.state).toBe("UNDERSTAND")
     expect(sessions.get("s1")?.snapshot()?.evidence).toHaveLength(1)
+    expect(sessions.get("s1")?.snapshot()?.evidenceBundles[0]?.task.description).toBe("x")
+    expect(sessions.get("s1")?.snapshot()?.evidenceBundles[0]?.retrievedSources).toEqual(["glob"])
     expect(sessions.get("s1")?.snapshot()?.evidence[0]?.content).toContain("ok")
     await expect(advanceSmmrSessionAfterTool({ sessionID: "s1", tool: "glob" }, undefined, sessions)).resolves.toBe(false)
   })
