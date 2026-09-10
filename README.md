@@ -196,7 +196,8 @@ repository work remains available; set `allow_research` for external research,
 when verified experience may be persisted. The configured model is applied to
 enabled OpenCode SMMR chat requests using `provider:model` or `provider/model`
 syntax; it does not silently fall back to a network provider. Remove the block
-or set `enabled: false` to restore the
+Malformed model identifiers are rejected by the configuration schema. Remove
+the block or set `enabled: false` to restore the
 legacy host-only behavior.
 
 ## Local-first design goals

@@ -29,4 +29,9 @@ describe("SMMR configuration contract", () => {
   test("rejects unknown SMMR settings", () => {
     expect(SmmrSettingsSchema.safeParse({ enabled: true, controller: "custom" }).success).toBe(false)
   })
+
+  test("rejects model identifiers without a provider separator", () => {
+    expect(SmmrSettingsSchema.safeParse({ enabled: true, model: "qwen3.5" }).success).toBe(false)
+    expect(SmmrSettingsSchema.safeParse({ enabled: true, model: "ollama/qwen3.5:4b" }).success).toBe(true)
+  })
 })
