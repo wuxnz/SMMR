@@ -83,11 +83,11 @@ slices are merged and independently testable:
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, migration primitive, `.smmr/rules`, boulder-state, and team paths |
-| Host integration | Planned | opt-in SMMR configuration and OpenCode adapter wiring |
+| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, and per-chat `SmmrRuntimeSession` creation; controller-driven skills remain |
 
-The SMMR packages are intentionally harness-neutral. They do not import
-OpenCode, Codex, Senpi, or another host API. Host adapters will be added after
-the core contracts are stable.
+The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
+contract without changing legacy behavior when SMMR is disabled; Codex and
+Senpi adapter consumption remains future work.
 
 ## Architecture
 
@@ -162,9 +162,9 @@ omo
 The compatibility package also exposes an additive `smmr` launcher alias. The
 alias does not rename or remove the existing OmO commands.
 
-These commands install the compatibility runtime; they do not yet enable the
-SMMR controller automatically. SMMR host integration is an explicit roadmap
-item so the existing OmO behavior remains safe while the new contracts mature.
+These commands install the compatibility runtime. SMMR remains opt-in: add a
+root `smmr` block with `enabled: true` to activate the OpenCode per-chat
+session bridge. Codex and Senpi do not consume this block yet.
 
 ## Local-first design goals
 
@@ -201,8 +201,10 @@ defaults are `enabled: false`, `allow_network: false`,
 `allow_memory_writes: false`, and `allow_research: false`; an optional
 `model` selects the normalized SMMR provider. The block is accepted by the
 shared config schema and surfaced by the OpenCode adapter. When enabled,
-startup records the opt-in and permission boundary; controller execution and
-the five foundational skills remain the next host-integration step.
+startup records the opt-in and permission boundary, and each enabled OpenCode
+chat creates a deterministic runtime session at `DISCOVER`. The controller
+does not yet drive the full research, retrieval, execution, verification, and
+memory skill pipeline automatically; that remains the next integration step.
 
 ## Development
 
