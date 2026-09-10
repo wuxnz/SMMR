@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { memoryScore, validateMemoryCandidate } from "./policy"
 import { MemoryStore } from "./store"
+import { toSmmrEvidenceBundle } from "./core-bundle"
 import type { MemoryCandidate } from "./types"
 
 const base: MemoryCandidate = {
@@ -44,5 +45,13 @@ describe("SMMR memory policy", () => {
     expect(store.size).toBe(1)
     expect(store.read("low")).toBeUndefined()
     expect(store.read("high")).toBeDefined()
+  })
+
+  test("converts memory entries into prior-experience evidence", () => {
+    const bundle = toSmmrEvidenceBundle([base], "Understand authentication")
+    expect(bundle.task.description).toBe("Understand authentication")
+    expect(bundle.previousExperiences[0]).toContain("semantic:auth-fact")
+    expect(bundle.retrievedSources).toEqual(["auth-fact"])
+    expect(bundle.retrievalContext).toContain("Tags: auth, clerk")
   })
 })
