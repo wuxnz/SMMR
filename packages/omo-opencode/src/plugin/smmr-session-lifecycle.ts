@@ -28,12 +28,16 @@ export async function advanceSmmrSessionAfterTool(
   const session = sessions.get(input.sessionID)
   if (!session || typeof input.tool !== "string") return false
   await session.runNextSkill(() => input.tool as string)
+  const rawOutput = (output as { output?: unknown } | undefined)?.output
+  const excerpt = typeof rawOutput === "string" ? rawOutput.slice(0, 2_000) : ""
   session.recordEvidence(
     createEvidence({
       id: `opencode-tool:${input.sessionID}:${input.tool}:${Date.now()}`,
       kind: "observation",
       claim: `OpenCode tool ${input.tool} completed successfully`,
-      content: "The OpenCode tool-execute-after lifecycle completed with output.",
+      content: excerpt.length > 0
+        ? `OpenCode tool output excerpt:\n${excerpt}`
+        : "The OpenCode tool-execute-after lifecycle completed with output.",
       source: input.tool,
       confidence: 1,
       verified: true,
