@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { ResearchSession } from "./session"
+import { toSmmrEvidenceBundle } from "./core-bundle"
 import type { ResearchProvider, SearchHit } from "./types"
 
 const hits: readonly SearchHit[] = [
@@ -39,5 +40,14 @@ describe("SMMR research", () => {
     const result = await session.search({ query: "docs", budget: { maxResultsPerQuery: 1 } })
     expect(calls).toEqual([1])
     expect(result.hits).toHaveLength(1)
+  })
+
+  test("converts bounded research evidence into the core bundle", async () => {
+    const result = await new ResearchSession(provider).search({ query: "callback API" })
+    const bundle = toSmmrEvidenceBundle(result, "Fix callback validation")
+    expect(bundle.task.description).toBe("Fix callback validation")
+    expect(bundle.externalDocs).toContain("Auth docs — https://docs.example/auth")
+    expect(bundle.retrievedSources).toContain("https://docs.example/auth")
+    expect(bundle.retrievalContext).toContain("validates the state parameter")
   })
 })
