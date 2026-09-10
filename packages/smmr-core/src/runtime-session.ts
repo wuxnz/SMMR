@@ -1,6 +1,7 @@
 import { SmmrController, type ControllerBudget, type ControllerSnapshot } from "./controller"
 import type { Evidence } from "./evidence"
 import type { Reflection, WorkflowState } from "./workflow"
+import { SMMR_SKILL_REGISTRY, type SmmrSkillDescriptor } from "./skills"
 
 export interface SmmrRuntimeSettings {
   readonly enabled?: boolean
@@ -27,6 +28,7 @@ export class SmmrRuntimeSession {
   readonly allowMemoryWrites: boolean
   readonly allowResearch: boolean
   readonly controller: SmmrController | undefined
+  readonly skills: readonly SmmrSkillDescriptor[] = SMMR_SKILL_REGISTRY
 
   constructor(options: SmmrRuntimeSessionOptions) {
     const settings = options.settings ?? {}
