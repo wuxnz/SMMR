@@ -58,6 +58,23 @@ function createState(works: readonly BoulderWorkState[]): BoulderState {
 }
 
 describe("readBoulderState", () => {
+  test("reads canonical .smmr state before legacy .omo state", () => {
+    const directory = createTempDirectory()
+    const state = createState([createWork({ workId: "canonical", sessionIds: ["canonical"], startedAt: "2026-06-05T01:00:00.000Z" })])
+    mkdirSync(join(directory, ".smmr"), { recursive: true })
+    writeFileSync(join(directory, ".smmr", "boulder.json"), JSON.stringify(state), "utf-8")
+
+    expect(readBoulderState(directory)?.active_work_id).toBe("canonical")
+  })
+
+  test("falls back to legacy .omo state during migration", () => {
+    const directory = createTempDirectory()
+    const state = createState([createWork({ workId: "legacy", sessionIds: ["legacy"], startedAt: "2026-06-05T01:00:00.000Z" })])
+    writeState(directory, state)
+
+    expect(readBoulderState(directory)?.active_work_id).toBe("legacy")
+  })
+
   test("#given no boulder file #when reading state #then null is returned", () => {
     // given
     const directory = createTempDirectory()

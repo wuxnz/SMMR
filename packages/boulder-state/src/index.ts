@@ -1,4 +1,4 @@
-export { BOULDER_DIR, BOULDER_FILE, BOULDER_STATE_PATH, NOTEPAD_BASE_PATH, NOTEPAD_DIR, PROMETHEUS_PLANS_DIR } from "./constants"
+export { BOULDER_DIR, BOULDER_FILE, BOULDER_STATE_PATH, LEGACY_BOULDER_DIR, NOTEPAD_BASE_PATH, NOTEPAD_DIR, PROMETHEUS_PLANS_DIR, SMMR_BOULDER_DIR } from "./constants"
 export { getPlanChecklist, parsePlanChecklist } from "./plan-checklist"
 export { readCurrentTopLevelTask } from "./top-level-task"
 export {

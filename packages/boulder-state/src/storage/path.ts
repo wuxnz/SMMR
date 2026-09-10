@@ -1,11 +1,13 @@
 import { existsSync } from "node:fs"
 import { isAbsolute, join, relative, resolve } from "node:path"
 
-import { BOULDER_DIR, BOULDER_FILE } from "../constants"
+import { BOULDER_FILE, LEGACY_BOULDER_DIR, SMMR_BOULDER_DIR } from "../constants"
 import type { BoulderState, BoulderWorkState } from "../types"
 
 export function getBoulderFilePath(directory: string): string {
-  return join(directory, BOULDER_DIR, BOULDER_FILE)
+  const canonical = join(directory, SMMR_BOULDER_DIR, BOULDER_FILE)
+  const legacy = join(directory, LEGACY_BOULDER_DIR, BOULDER_FILE)
+  return existsSync(canonical) || !existsSync(legacy) ? canonical : legacy
 }
 
 function resolveTrackedPath(baseDirectory: string, trackedPath: string): string {
