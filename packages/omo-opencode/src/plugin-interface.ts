@@ -17,6 +17,7 @@ import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
 import { log } from "./shared/logger"
 import { createSmmrChatSession } from "./plugin/smmr-chat-session"
 import { removeDeletedSmmrSession } from "./plugin/smmr-session-lifecycle"
+import { getSmmrSystemPolicy } from "./plugin/smmr-system-policy"
 
 import type { CreatedHooks } from "./create-hooks"
 import type { Managers } from "./create-managers"
@@ -102,6 +103,7 @@ export function createPluginInterface(args: {
       pluginConfig.default_mode,
       getUltraworkMessage,
       hooks.keywordDetector,
+      (sessionID) => getSmmrSystemPolicy(sessionID, smmrSessions),
     ),
 
     config: managers.configHandler,
