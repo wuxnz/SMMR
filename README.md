@@ -200,8 +200,9 @@ The config contract now reserves an opt-in root `smmr` block. Its resolved
 defaults are `enabled: false`, `allow_network: false`,
 `allow_memory_writes: false`, and `allow_research: false`; an optional
 `model` selects the normalized SMMR provider. The block is accepted by the
-shared config schema now, while controller startup and the five foundational
-skills remain part of host integration.
+shared config schema and surfaced by the OpenCode adapter. When enabled,
+startup records the opt-in and permission boundary; controller execution and
+the five foundational skills remain the next host-integration step.
 
 ## Development
 

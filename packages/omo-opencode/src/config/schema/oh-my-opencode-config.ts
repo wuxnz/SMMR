@@ -28,6 +28,7 @@ import { TmuxConfigSchema } from "./tmux"
 import { TuiConfigSchema } from "./tui"
 import { UlwExecuteConfigSchema } from "./ulw-execute"
 import { WebsearchConfigSchema } from "./websearch"
+import { SmmrSettingsLayerSchema } from "@oh-my-opencode/omo-config-core"
 
 export const OhMyOpenCodeConfigSchema = z.object({
   $schema: z.string().optional(),
@@ -59,6 +60,8 @@ export const OhMyOpenCodeConfigSchema = z.object({
   hashline_edit: z.boolean().optional(),
   /** Enable anonymous telemetry. Default: enabled when omitted. Set to false to disable. */
   telemetry: z.boolean().optional().describe("Enable or disable anonymous telemetry. Default: enabled when omitted. Set to false to disable."),
+  /** Opt-in SMMR controller configuration; disabled unless explicitly enabled. */
+  smmr: SmmrSettingsLayerSchema.optional(),
   /** Enable model fallback on API errors (default: false). Set to true to enable automatic model switching when model errors occur. */
   model_fallback: z.boolean().optional(),
   agents: AgentOverridesSchema.optional(),

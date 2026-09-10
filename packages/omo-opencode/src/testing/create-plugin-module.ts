@@ -248,6 +248,15 @@ export function createPluginModule(overrides: Partial<PluginModuleDeps> = {}): P
     deps.initI18n(pluginConfig.i18n?.locale ? { locale: pluginConfig.i18n.locale } : undefined)
     deps.setAgentSortOrder(pluginConfig.agent_order)
 
+    if (pluginConfig.smmr?.enabled === true) {
+      deps.log("[smmr] opt-in configuration detected; controller startup integration is staged", {
+        model: pluginConfig.smmr.model,
+        allowNetwork: pluginConfig.smmr.allow_network === true,
+        allowMemoryWrites: pluginConfig.smmr.allow_memory_writes === true,
+        allowResearch: pluginConfig.smmr.allow_research === true,
+      })
+    }
+
     if (pluginConfig.openclaw) {
       await deps.initializeOpenClaw(pluginConfig.openclaw)
     }
