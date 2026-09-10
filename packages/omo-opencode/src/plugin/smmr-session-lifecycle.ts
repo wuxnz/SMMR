@@ -18,3 +18,15 @@ export function removeDeletedSmmrSession(
         : undefined
   return sessionID !== undefined && sessions.delete(sessionID)
 }
+
+export async function advanceSmmrSessionAfterTool(
+  input: { sessionID?: unknown; tool?: unknown },
+  output: unknown,
+  sessions: Map<string, SmmrRuntimeSession>,
+): Promise<boolean> {
+  if (output === undefined || typeof input.sessionID !== "string") return false
+  const session = sessions.get(input.sessionID)
+  if (!session || typeof input.tool !== "string") return false
+  await session.runNextSkill(() => input.tool as string)
+  return true
+}

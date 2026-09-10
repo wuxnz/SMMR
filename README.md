@@ -91,7 +91,7 @@ slices are merged and independently testable:
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, migration primitive, `.smmr/rules`, boulder-state, and team paths |
-| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, permission-checked execution with post-success advancement, and per-session operating-policy injection; host adapters still need to wire every external operation |
+| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, permission-checked execution after successful tool completions, and per-session operating-policy injection; host adapters still need to wire specialized external operations |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
 contract without changing legacy behavior when SMMR is disabled; Codex and
@@ -217,8 +217,9 @@ now dispatch registered foundational skills through the permission boundary
 and inject the bounded operating policy into that session's system context,
 and deterministically selects the next foundational skill from the controller
 state. `runNextSkill` gives adapters a bounded execution primitive that advances
-only after success; host adapters still need to wire every external research,
-retrieval, execution, verification, and memory operation.
+only after success, and OpenCode tool completions now consume it for the active
+session. Specialized research, retrieval, verification, and memory operations
+still need dedicated adapter wiring.
 
 ## Development
 
