@@ -16,6 +16,7 @@ import { createToolExecuteAfterHandler } from "./plugin/tool-execute-after"
 import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
 import { log } from "./shared/logger"
 import { createSmmrChatSession } from "./plugin/smmr-chat-session"
+import { removeDeletedSmmrSession } from "./plugin/smmr-session-lifecycle"
 
 import type { CreatedHooks } from "./create-hooks"
 import type { Managers } from "./create-managers"
@@ -105,13 +106,16 @@ export function createPluginInterface(args: {
 
     config: managers.configHandler,
 
-    event: createEventHandler({
+    event: async (input) => {
+      await createEventHandler({
       ctx,
       pluginConfig,
       firstMessageVariantGate,
       managers,
       hooks,
-    }),
+      })(input)
+      removeDeletedSmmrSession(input, smmrSessions)
+    },
 
     "tool.definition": createToolDefinitionHandler({
       hooks,
