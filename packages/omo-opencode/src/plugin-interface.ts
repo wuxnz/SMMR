@@ -94,8 +94,10 @@ export function createPluginInterface(args: {
           })
         }
       }
-      applySmmrModelOverride(input.sessionID, output.message, smmrSessions)
       await chatMessageHandler(input, output)
+      // Apply last so legacy handlers cannot silently replace an explicit
+      // SMMR model selection.
+      applySmmrModelOverride(input.sessionID, output.message, smmrSessions)
     },
 
     "experimental.chat.messages.transform": createMessagesTransformHandler({
