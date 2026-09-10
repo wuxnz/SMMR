@@ -35,7 +35,8 @@
     "packages/pi-goal",
     "packages/pi-webfetch",
     "packages/omo-opencode",
-    "packages/omo-native"
+    "packages/omo-native",
+    "packages/smmr-core"
   ],
   "bin": {
     "oh-my-opencode": "bin/oh-my-opencode.js",
