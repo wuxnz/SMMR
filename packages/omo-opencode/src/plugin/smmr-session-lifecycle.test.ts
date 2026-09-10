@@ -3,6 +3,7 @@ import { SmmrRuntimeSession } from "@smmr/core"
 import {
   advanceSmmrSessionAfterTool,
   assertSmmrSessionCanRunNextSkill,
+  assertSmmrToolCanRun,
   removeDeletedSmmrSession,
 } from "./smmr-session-lifecycle"
 
@@ -36,6 +37,24 @@ describe("removeDeletedSmmrSession", () => {
         sessions,
       ),
     ).toBe(true)
+  })
+})
+
+describe("assertSmmrToolCanRun", () => {
+  test("rejects known network tools until network permission is enabled", async () => {
+    const blocked = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
+    await expect(assertSmmrToolCanRun(blocked, "webfetch")).rejects.toThrow("network permission is disabled")
+
+    const allowed = new SmmrRuntimeSession({
+      objective: "inspect",
+      settings: { enabled: true, allow_network: true },
+    })
+    await expect(assertSmmrToolCanRun(allowed, "browser_open")).resolves.toBeUndefined()
+  })
+
+  test("leaves local tools under the active skill permission", async () => {
+    const session = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
+    await expect(assertSmmrToolCanRun(session, "glob")).resolves.toBeUndefined()
   })
 })
 

@@ -8,9 +8,20 @@ function sanitizeEvidenceExcerpt(value: string): string {
 }
 
 export async function assertSmmrSessionCanRunNextSkill(session: SmmrRuntimeSession): Promise<void> {
+  await assertSmmrToolCanRun(session)
+}
+
+const NETWORK_TOOL_PATTERN = /(?:^|[_:-])(webfetch|web[-_]?search|browser|open[-_]?url|fetch[-_]?url)(?:$|[_:-])/i
+
+export async function assertSmmrToolCanRun(
+  session: SmmrRuntimeSession,
+  tool?: string,
+): Promise<void> {
   const skill = session.nextSkill()
-  if (skill === undefined) return
-  await session.execute(skill.operation, () => undefined)
+  if (skill !== undefined) await session.execute(skill.operation, () => undefined)
+  if (typeof tool === "string" && NETWORK_TOOL_PATTERN.test(tool)) {
+    await session.execute("network", () => undefined)
+  }
 }
 
 export function removeDeletedSmmrSession(
