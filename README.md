@@ -58,8 +58,9 @@ future host adapters:
 - `smmr-debug-and-repair` — classified failures and bounded retries;
 - `smmr-memory-management` — evidence-gated episodic, semantic, and procedural memory.
 
-These are harness-neutral skill assets. OpenCode startup recognition is staged;
-the controller still needs to invoke the skills as part of host integration.
+These are harness-neutral skill assets. OpenCode recognizes them through the
+opt-in session policy and consumes the controller's next-skill selection;
+specialized host operations still need to be wired to each skill.
 The canonical registry in `@smmr/core` maps each skill to its required
 operation: research requires `research` permission, memory management requires
 `memory-write`, and the remaining four are local operations.
@@ -71,9 +72,9 @@ and remains inert until `smmr.enabled` is explicitly true. Host adapters can
 own this session without importing a harness API.
 
 The session exposes bounded `advance`, `retry`, `reflect`, and `recordEvidence`
-operations, plus permission-checked execution for local, network, research,
-and durable-memory work. Adapters must pass external work through this boundary
-instead of silently bypassing SMMR permissions.
+operations, plus `runNextSkill` for permission-checked execution of the current
+skill with post-success advancement. Adapters must pass external work through
+this boundary instead of silently bypassing SMMR permissions.
 
 ## Current status
 
@@ -301,7 +302,8 @@ The implementation sequence is:
 6. evaluation and trajectory metrics (`@smmr/eval`);
 7. training scaffolds and trajectory export (`@smmr/training`);
 8. additive identity foundation and local-first migration;
-9. opt-in host integration and startup wiring.
+9. opt-in host integration, state-to-skill planning, and successful-tool
+   advancement; specialized adapter operations remain in progress.
 
 Each stage is delivered as a small, independently tested change. The old OmO
 surface remains readable until the SMMR replacement has equivalent coverage.
