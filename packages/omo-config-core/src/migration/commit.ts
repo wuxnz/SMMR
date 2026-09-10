@@ -42,11 +42,18 @@ function validateTarget(targetPath: string, document: Readonly<Record<string, un
 function writerInput(targetPath: string, env: MigrationEnvironment): { readonly projectDir?: string; readonly scope: "project" | "user" } {
   const homeDir = resolveHomeDir(env)
   const userDirectory = toPosixPath(join(homeDir, ".omo"))
+  const smmrUserDirectory = toPosixPath(join(homeDir, ".smmr"))
   const fileName = basename(targetPath)
   if (toPosixPath(dirname(targetPath)) === userDirectory && (fileName === "omo.json" || fileName === "omo.jsonc")) {
     return { scope: "user" }
   }
+  if (toPosixPath(dirname(targetPath)) === smmrUserDirectory && (fileName === "smmr.json" || fileName === "smmr.jsonc")) {
+    return { scope: "user" }
+  }
   if (basename(dirname(targetPath)) === ".omo" && (fileName === "omo.json" || fileName === "omo.jsonc")) {
+    return { projectDir: dirname(dirname(targetPath)), scope: "project" }
+  }
+  if (basename(dirname(targetPath)) === ".smmr" && (fileName === "smmr.json" || fileName === "smmr.jsonc")) {
     return { projectDir: dirname(dirname(targetPath)), scope: "project" }
   }
   throw new MigrationTransactionError(`Migration target is not an omo config path: ${targetPath}`)
