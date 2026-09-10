@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import { SmmrRuntimeSession } from "@smmr/core"
-import { advanceSmmrSessionAfterTool, removeDeletedSmmrSession } from "./smmr-session-lifecycle"
+import {
+  advanceSmmrSessionAfterTool,
+  assertSmmrSessionCanRunNextSkill,
+  removeDeletedSmmrSession,
+} from "./smmr-session-lifecycle"
 
 describe("removeDeletedSmmrSession", () => {
   test("removes a session using the current event shape", () => {
@@ -61,5 +65,26 @@ describe("advanceSmmrSessionAfterTool", () => {
     expect(content).not.toContain("secret-token")
     expect(content).not.toContain("abc123")
     expect(content).not.toContain("hunter2")
+  })
+})
+
+describe("assertSmmrSessionCanRunNextSkill", () => {
+  test("allows local work and rejects disabled research before execution", async () => {
+    const session = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
+    await expect(assertSmmrSessionCanRunNextSkill(session)).resolves.toBeUndefined()
+    session.advance()
+    session.advance()
+    expect(session.nextSkill()?.name).toBe("smmr-research-first")
+    await expect(assertSmmrSessionCanRunNextSkill(session)).rejects.toThrow("research permission is disabled")
+  })
+
+  test("allows research when explicitly enabled", async () => {
+    const session = new SmmrRuntimeSession({
+      objective: "research",
+      settings: { enabled: true, allow_research: true },
+    })
+    session.advance()
+    session.advance()
+    await expect(assertSmmrSessionCanRunNextSkill(session)).resolves.toBeUndefined()
   })
 })

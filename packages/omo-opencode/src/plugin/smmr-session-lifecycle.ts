@@ -7,6 +7,12 @@ function sanitizeEvidenceExcerpt(value: string): string {
     .replace(/(\b(?:api[-_ ]?key|token|secret|password)\s*[:=]\s*)[^\s,;]+/gi, "$1[redacted]")
 }
 
+export async function assertSmmrSessionCanRunNextSkill(session: SmmrRuntimeSession): Promise<void> {
+  const skill = session.nextSkill()
+  if (skill === undefined) return
+  await session.execute(skill.operation, () => undefined)
+}
+
 export function removeDeletedSmmrSession(
   input: unknown,
   sessions: Map<string, SmmrRuntimeSession>,
