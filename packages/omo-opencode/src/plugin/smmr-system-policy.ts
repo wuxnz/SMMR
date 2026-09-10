@@ -11,5 +11,6 @@ export function getSmmrSystemPolicy(
   if (!session) return undefined
 
   const skills = session.skills.map((skill) => skill.name).join(", ")
-  return `${SMMR_MODE_TAG}\nSMMR is enabled for this task. Follow the bounded controller workflow.\nState: ${session.snapshot()?.state ?? "DISCOVER"}.\nAvailable foundational skills: ${skills}.\nUse only operations permitted by the runtime session; require evidence before verification or memory writes.\n</smmr-mode>`
+  const nextSkill = session.nextSkill()?.name ?? "none"
+  return `${SMMR_MODE_TAG}\nSMMR is enabled for this task. Follow the bounded controller workflow.\nState: ${session.snapshot()?.state ?? "DISCOVER"}.\nNext skill: ${nextSkill}.\nAvailable foundational skills: ${skills}.\nUse only operations permitted by the runtime session; require evidence before verification or memory writes.\n</smmr-mode>`
 }

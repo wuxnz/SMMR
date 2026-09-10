@@ -10,6 +10,7 @@ describe("getSmmrSystemPolicy", () => {
     const policy = getSmmrSystemPolicy("s1", sessions)
     expect(policy).toContain(SMMR_MODE_TAG)
     expect(policy).toContain("State: DISCOVER")
+    expect(policy).toContain("Next skill: smmr-repository-analysis")
     expect(policy).toContain("smmr-research-first")
     expect(getSmmrSystemPolicy("missing", sessions)).toBeUndefined()
   })
