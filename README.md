@@ -193,9 +193,10 @@ same block in the compatible `.omo/omo.jsonc` configuration):
 All permissions default to `false`, even when SMMR is enabled. Local
 repository work remains available; set `allow_research` for external research,
 `allow_network` for network-backed operations, and `allow_memory_writes` only
-when verified experience may be persisted. The configured model is passed to
-the normalized SMMR model boundary; it does not silently fall back to a
-network provider. Remove the block or set `enabled: false` to restore the
+when verified experience may be persisted. The configured model is applied to
+enabled OpenCode SMMR chat requests using `provider:model` or `provider/model`
+syntax; it does not silently fall back to a network provider. Remove the block
+or set `enabled: false` to restore the
 legacy host-only behavior.
 
 ## Local-first design goals
