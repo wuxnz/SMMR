@@ -28,6 +28,11 @@ const mockRunOpenCodeStartupMigration = mock(() => ({
   results: [],
   skippedConflictCount: 0,
 }))
+const mockMigrateOmoUserConfigToSmmr = mock(() => ({
+  journalResumed: false,
+  diagnostics: [],
+  status: "skipped" as const,
+}))
 const mockLoadPluginConfig = mock(() => ({}))
 const mockLoadConfigChain = mock((directory: string) => ({
   config: mockLoadPluginConfig(directory, {}),
@@ -96,6 +101,7 @@ function createTestPluginModule(overrides: Parameters<typeof createPluginModule>
     logLegacyPluginStartupWarning: mockLogLegacyPluginStartupWarning,
     migrateLegacyWorkspaceDirectory: mockMigrateLegacyWorkspaceDirectory,
     runOpenCodeStartupMigration: mockRunOpenCodeStartupMigration,
+    migrateOmoUserConfigToSmmr: mockMigrateOmoUserConfigToSmmr,
     loadConfigChain: mockLoadConfigChain as never,
     loadPluginConfig: mockLoadPluginConfig as never,
     isTmuxIntegrationEnabled: mockIsTmuxIntegrationEnabled as never,
@@ -124,6 +130,7 @@ describe("createPluginModule()", () => {
     mockLoadPluginConfig.mockClear()
     mockLoadConfigChain.mockClear()
     mockRunOpenCodeStartupMigration.mockClear()
+    mockMigrateOmoUserConfigToSmmr.mockClear()
     mockCreateManagers.mockClear()
     mockTuiStateMirrorStop.mockClear()
     mockRuntimeSkillSourceStop.mockClear()
@@ -432,6 +439,7 @@ describe("createPluginModule()", () => {
 
       // then
       expect(runOpenCodeStartupMigration).toHaveBeenCalledTimes(1)
+      expect(mockMigrateOmoUserConfigToSmmr).toHaveBeenCalledTimes(1)
     })
   })
 

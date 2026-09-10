@@ -1,4 +1,5 @@
 import type { Hooks, Plugin, PluginModule } from "@opencode-ai/plugin"
+import { migrateOmoUserConfigToSmmr } from "@oh-my-opencode/omo-config-core"
 import type { HookName } from "../config"
 import { validatePluginConfig } from "../config/validate"
 import { initConfigContext } from "../cli/config-manager/config-context"
@@ -61,6 +62,7 @@ export type PluginModuleDeps = {
   logLegacyPluginStartupWarning: typeof logLegacyPluginStartupWarning
   migrateLegacyWorkspaceDirectory: typeof migrateLegacyWorkspaceDirectory
   runOpenCodeStartupMigration: typeof runOpenCodeStartupMigration
+  migrateOmoUserConfigToSmmr: typeof migrateOmoUserConfigToSmmr
   startOmoProcessSweep: () => Promise<void>
   detectDuplicateOmoPlugin: typeof detectDuplicateOmoPlugin
   getDuplicateOmoPluginWarning: typeof getDuplicateOmoPluginWarning
@@ -95,6 +97,7 @@ const defaultPluginModuleDeps: PluginModuleDeps = {
   logLegacyPluginStartupWarning,
   migrateLegacyWorkspaceDirectory,
   runOpenCodeStartupMigration,
+  migrateOmoUserConfigToSmmr,
   startOmoProcessSweep: () => sweepOmoFamiliesBestEffort({ log }),
   detectDuplicateOmoPlugin,
   getDuplicateOmoPluginWarning,
@@ -159,6 +162,7 @@ function startupToastBody(input: {
 export function createPluginModule(overrides: Partial<PluginModuleDeps> = {}): PluginModule {
   const deps = { ...defaultPluginModuleDeps, ...overrides }
   let startupMigration: ReturnType<PluginModuleDeps["runOpenCodeStartupMigration"]> | undefined
+  let smmrMigration: ReturnType<PluginModuleDeps["migrateOmoUserConfigToSmmr"]> | undefined
   const serverPlugin: Plugin = async (input, _options): Promise<Hooks> => {
     deps.installAgentSortShim()
     deps.initConfigContext("opencode", null)
@@ -168,6 +172,12 @@ export function createPluginModule(overrides: Partial<PluginModuleDeps> = {}): P
     deps.logLegacyPluginStartupWarning()
     deps.migrateLegacyWorkspaceDirectory(input.directory)
     startupMigration ??= deps.runOpenCodeStartupMigration({ cwd: input.directory })
+    smmrMigration ??= deps.migrateOmoUserConfigToSmmr()
+    deps.log("[smmr] config migration checked", {
+      status: smmrMigration.status,
+      diagnostics: smmrMigration.diagnostics,
+      journalResumed: smmrMigration.journalResumed,
+    })
     const startupValidation = deps.loadConfigChain(input.directory)
     const startupDiagnostics = startupValidation.valid ? [] : startupValidation.messages
     deps.log("[config-migration] startup completed", {
