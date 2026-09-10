@@ -1,5 +1,6 @@
 export * from "./controller"
 export * from "./evidence"
+export * from "./evidence-bundle"
 export * from "./workflow"
 export * from "./runtime-session"
 export * from "./skills"
