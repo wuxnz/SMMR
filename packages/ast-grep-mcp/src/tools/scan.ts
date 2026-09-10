@@ -1,4 +1,5 @@
 import { normalizeRecords, type NormalizedMatch } from "../normalize";
+import { resolveSmmrEnv } from "@oh-my-opencode/utils";
 import {
   DEFAULT_MATCHES,
   DEFAULT_TIMEOUT_MS,
@@ -335,7 +336,7 @@ export async function executeScan(
     );
   }
 
-  const workdir = input.workdir ?? process.env.OMO_AST_GREP_PROJECT_CWD ?? process.cwd();
+  const workdir = input.workdir ?? resolveSmmrEnv("AST_GREP_PROJECT_CWD") ?? process.cwd();
   let preview: Awaited<ReturnType<typeof spawnSgRunner>>;
   try {
     preview = await spawnSgRunner({
