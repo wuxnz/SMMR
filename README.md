@@ -181,9 +181,23 @@ bun test packages/smmr-core/src
 bun run --cwd packages/smmr-core typecheck
 bun test packages/smmr-models/src
 bun run --cwd packages/smmr-models typecheck
+bun test packages/smmr-memory/src
+bun run --cwd packages/smmr-memory typecheck
+bun test packages/smmr-rag/src
+bun run --cwd packages/smmr-rag typecheck
+bun test packages/smmr-execution/src
+bun run --cwd packages/smmr-execution typecheck
+bun test packages/smmr-research/src
+bun run --cwd packages/smmr-research typecheck
+bun test packages/smmr-eval/src
+bun run --cwd packages/smmr-eval typecheck
 bun test packages/smmr-training/src
 bun run --cwd packages/smmr-training typecheck
 ```
+
+The focused commands cover the merged harness-neutral packages. Run them from
+the repository root after `bun install`; each package owns its public contract
+and can be tested without starting an agent host.
 
 The repository-wide test preload builds additional vendored harness assets.
 When working on a harness-neutral SMMR package, use a package-local Bun config
