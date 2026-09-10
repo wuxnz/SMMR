@@ -76,6 +76,7 @@ export interface LoadedRule extends RuleCandidate {
  * Source identifier for rule files. Used for deterministic ordering and display.
  */
 export type RuleSource =
+	| ".smmr/rules"
 	| ".omo/rules"
 	| ".claude/rules"
 	| ".cursor/rules"
@@ -84,6 +85,7 @@ export type RuleSource =
 	| "CONTEXT.md"
 	| "plugin-bundled"
 	| "~/.omo/rules"
+	| "~/.smmr/rules"
 	| "~/.opencode/rules"
 	| "~/.claude/rules";
 
