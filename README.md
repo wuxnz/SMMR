@@ -177,9 +177,9 @@ The SMMR target defaults are:
 - evidence required before a task is considered verified;
 - compatibility names retained during the migration window.
 
-The current compatibility runtime predates these defaults and still has its
-existing OmO telemetry/configuration behavior. Do not interpret the target
-policy above as claiming that the legacy adapter has already been migrated.
+The compatibility runtime now keeps telemetry disabled unless configuration
+explicitly enables it or `SMMR_SEND_ANONYMOUS_TELEMETRY=1/yes` is set. Legacy
+`OMO_*` telemetry variables remain readable during migration.
 
 The canonical SMMR config locations are `~/.smmr/smmr.json[c]` and project
 `.smmr/smmr.json[c]` files. The compatibility runtime continues to read the

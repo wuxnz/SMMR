@@ -175,6 +175,22 @@ describe("posthog disable env var parsing", () => {
 
   const disableValues = ["TRUE", "True", "Yes", "YES", " 1 ", " true "]
 
+  it("keeps telemetry disabled when config and environment are omitted", async () => {
+    process.env.POSTHOG_API_KEY = "test-api-key"
+    const captured: CapturedPostHogMessage[] = []
+    const posthogModule = usePostHogModule(await importPostHogModule())
+    posthogModule.__setTransportFactoryForTesting(createCapturingTransportFactory(captured))
+
+    posthogModule.createCliPostHog().trackActive("distinct-cli", "run_started")
+
+    expect(captured).toHaveLength(0)
+  })
+
+  it("accepts canonical SMMR environment opt-in", async () => {
+    const posthogModule = usePostHogModule(await importPostHogModule())
+    expect(posthogModule.shouldDisablePostHog({ SMMR_SEND_ANONYMOUS_TELEMETRY: "1" }, undefined)).toBe(false)
+  })
+
   for (const value of disableValues) {
     it(`treats OMO_DISABLE_POSTHOG=${JSON.stringify(value)} as disabled`, async () => {
       // given

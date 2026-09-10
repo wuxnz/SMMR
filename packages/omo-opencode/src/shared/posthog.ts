@@ -11,6 +11,7 @@ import type {
   TelemetryOsProvider,
   TelemetryTransportFactory,
 } from "@oh-my-opencode/telemetry-core"
+import { resolveSmmrEnv } from "@oh-my-opencode/utils"
 import { getPostHogActivityCaptureState } from "./posthog-activity-state"
 import { log } from "./logger"
 import { createOpencodeTelemetryProductConfig } from "./telemetry-product-identity"
@@ -96,15 +97,19 @@ export function shouldDisablePostHog(env: TelemetryEnv, configEnabled: boolean |
     return true
   }
 
-  if (isTruthy(env.OMO_DISABLE_POSTHOG?.trim().toLowerCase())) {
+  if (isTruthy(resolveSmmrEnv("DISABLE_POSTHOG", env)?.trim().toLowerCase())) {
     return true
   }
 
-  return isFalsy(env.OMO_SEND_ANONYMOUS_TELEMETRY?.trim().toLowerCase())
+  const explicitTelemetry = resolveSmmrEnv("SEND_ANONYMOUS_TELEMETRY", env)?.trim().toLowerCase()
+  if (isFalsy(explicitTelemetry)) return true
+
+  // SMMR is local-first: omitted configuration is opt-out of telemetry.
+  return configEnabled !== true && !isTruthy(explicitTelemetry)
 }
 
 function createCoreCompatibleTelemetryEnv(env: NodeJS.ProcessEnv): TelemetryEnv {
-  if (env.OMO_SEND_ANONYMOUS_TELEMETRY?.trim().toLowerCase() !== "yes") {
+  if (resolveSmmrEnv("SEND_ANONYMOUS_TELEMETRY", env)?.trim().toLowerCase() !== "yes") {
     return env
   }
 
