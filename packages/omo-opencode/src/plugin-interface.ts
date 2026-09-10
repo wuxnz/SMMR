@@ -18,7 +18,7 @@ import { log } from "./shared/logger"
 import { createSmmrChatSession } from "./plugin/smmr-chat-session"
 import {
   advanceSmmrSessionAfterTool,
-  assertSmmrSessionCanRunNextSkill,
+  assertSmmrToolCanRun,
   removeDeletedSmmrSession,
 } from "./plugin/smmr-session-lifecycle"
 import { getSmmrSystemPolicy } from "./plugin/smmr-system-policy"
@@ -134,7 +134,7 @@ export function createPluginInterface(args: {
 
     "tool.execute.before": async (input, output) => {
       const session = smmrSessions.get(input.sessionID)
-      if (session !== undefined) await assertSmmrSessionCanRunNextSkill(session)
+      if (session !== undefined) await assertSmmrToolCanRun(session, input.tool)
       await createToolExecuteBeforeHandler({
         ctx,
         hooks,

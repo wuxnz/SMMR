@@ -246,9 +246,9 @@ and deterministically selects the next foundational skill from the controller
 state. `runNextSkill` gives adapters a bounded execution primitive that advances
 only after success. OpenCode tool completions consume it and record a verified,
 bounded, credential-redacted output excerpt in the controller-owned observation
-for the active session; restricted research and memory-write skills are rejected
-before host tool execution, and failed completions record neither progress nor
-evidence.
+for the active session; restricted research, memory-write, and known
+network-capable tools are rejected before host tool execution, and failed
+completions record neither progress nor evidence.
 Specialized research,
 retrieval, verification, and memory operations still need dedicated adapter
 wiring.
