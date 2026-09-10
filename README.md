@@ -98,6 +98,15 @@ The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
 contract without changing legacy behavior when SMMR is disabled; Codex and
 Senpi adapter consumption remains future work.
 
+The implementation boundary is intentionally split:
+
+| Surface | Current state |
+| --- | --- |
+| Harness-neutral SMMR packages | Core controller, model, memory, retrieval, execution, research, evaluation, and training contracts are implemented and independently tested. |
+| OpenCode runtime | Opt-in sessions, model routing, policy injection, pre-tool permission checks, successful-tool advancement, and bounded redacted evidence are wired. |
+| OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
+| Codex and Senpi | Existing compatibility runtimes remain available, but they do not consume the SMMR config block yet. |
+
 ## Architecture
 
 The target v0.1 flow is:
@@ -195,9 +204,9 @@ repository work remains available; set `allow_research` for external research,
 `allow_network` for network-backed operations, and `allow_memory_writes` only
 when verified experience may be persisted. The configured model is applied to
 enabled OpenCode SMMR chat requests using `provider:model` or `provider/model`
-syntax; it does not silently fall back to a network provider. Remove the block
-Malformed model identifiers are rejected by the configuration schema. Remove
-the block or set `enabled: false` to restore the
+syntax; it does not silently fall back to a network provider. Malformed model
+identifiers are rejected by the configuration schema. Remove the block or set
+`enabled: false` to restore the
 legacy host-only behavior.
 
 ## Local-first design goals
@@ -240,7 +249,8 @@ defaults are `enabled: false`, `allow_network: false`,
 shared config schema and surfaced by the OpenCode adapter. When enabled,
 startup records the opt-in and permission boundary, and each enabled OpenCode
 chat creates a deterministic runtime session at `DISCOVER`. The runtime can
-now dispatch registered foundational skills through a pre-tool permission boundary
+now dispatch registered foundational skills through a pre-tool permission
+boundary
 and inject the bounded operating policy into that session's system context,
 and deterministically selects the next foundational skill from the controller
 state. `runNextSkill` gives adapters a bounded execution primitive that advances
@@ -249,9 +259,8 @@ bounded, credential-redacted output excerpt in the controller-owned observation
 for the active session; restricted research, memory-write, and known
 network-capable tools are rejected before host tool execution, and failed
 completions record neither progress nor evidence.
-Specialized research,
-retrieval, verification, and memory operations still need dedicated adapter
-wiring.
+Specialized research, retrieval, verification, and memory operations still need
+dedicated adapter wiring.
 
 ## Development
 
