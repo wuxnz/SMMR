@@ -31,6 +31,7 @@
     "packages/smmr-execution",
     "packages/smmr-research",
     "packages/smmr-eval",
+    "packages/smmr-training",
     "packages/telemetry-core",
     "packages/claude-code-compat-core",
     "packages/skills-loader-core",
