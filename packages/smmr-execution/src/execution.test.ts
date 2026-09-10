@@ -1,9 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import { classifyFailure } from "./failure"
 import { repairHint, verify } from "./verify"
+import { toSmmrEvidenceBundle } from "./core-bundle"
 import type { CommandExecutor, CommandResult, VerificationCheck } from "./types"
 
-const check = (kind: VerificationCheck["kind"], name = kind): VerificationCheck => ({ name, kind, command: { command: name } })
+const check = (kind: VerificationCheck["kind"], name?: string): VerificationCheck => ({ name: name ?? kind, kind, command: { command: name ?? kind } })
 const result = (overrides: Partial<CommandResult> = {}): CommandResult => ({ exitCode: 0, stdout: "", stderr: "", durationMs: 1, timedOut: false, ...overrides })
 
 describe("SMMR execution", () => {
@@ -32,5 +33,16 @@ describe("SMMR execution", () => {
   test("returns a targeted repair hint", () => {
     expect(repairHint(classifyFailure(result({ exitCode: 1, stderr: "test assertion failed" })))).toContain("failing assertion")
     expect(repairHint(undefined)).toBe("No repair is required.")
+  })
+
+  test("converts verification results into bounded execution evidence", async () => {
+    const verification = await verify(
+      { execute: async () => result({ stdout: "all tests passed" }) },
+      [check("test", "unit-tests")],
+    )
+    const bundle = toSmmrEvidenceBundle(verification, "Verify the change")
+    expect(bundle.retrievedSources).toEqual(["unit-tests"])
+    expect(bundle.retrievalContext).toContain("Status: passed")
+    expect(bundle.retrievalContext).toContain("all tests passed")
   })
 })
