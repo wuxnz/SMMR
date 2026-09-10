@@ -20,4 +20,8 @@ describe("OpenCode SMMR config", () => {
   test("rejects unknown SMMR fields", () => {
     expect(OhMyOpenCodeConfigSchema.safeParse({ smmr: { controller: "custom" } }).success).toBe(false)
   })
+
+  test("rejects malformed SMMR model identifiers", () => {
+    expect(OhMyOpenCodeConfigSchema.safeParse({ smmr: { enabled: true, model: "qwen3.5" } }).success).toBe(false)
+  })
 })
