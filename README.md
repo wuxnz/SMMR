@@ -91,7 +91,7 @@ slices are merged and independently testable:
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, migration primitive, `.smmr/rules`, boulder-state, and team paths |
-| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, permission-checked registry dispatch, and per-session operating-policy injection; host adapters still need to invoke the full skill pipeline |
+| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic state-to-skill planning, permission-checked dispatch, and per-session operating-policy injection; host adapters still need to execute the full pipeline |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
 contract without changing legacy behavior when SMMR is disabled; Codex and
@@ -215,8 +215,9 @@ startup records the opt-in and permission boundary, and each enabled OpenCode
 chat creates a deterministic runtime session at `DISCOVER`. The runtime can
 now dispatch registered foundational skills through the permission boundary
 and inject the bounded operating policy into that session's system context,
-but host adapters do not yet drive the full research, retrieval, execution,
-verification, and memory pipeline automatically.
+and deterministically selects the next foundational skill from the controller
+state. Host adapters do not yet execute the full research, retrieval,
+execution, verification, and memory pipeline automatically.
 
 ## Development
 

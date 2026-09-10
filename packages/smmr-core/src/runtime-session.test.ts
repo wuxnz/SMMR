@@ -27,6 +27,7 @@ describe("SmmrRuntimeSession", () => {
     expect(session.allowMemoryWrites).toBe(true)
     expect(session.allowNetwork).toBe(false)
     expect(session.snapshot()?.state).toBe("DISCOVER")
+    expect(session.nextSkill()?.name).toBe("smmr-repository-analysis")
   })
 
   test("enforces operation permissions before running adapter work", async () => {

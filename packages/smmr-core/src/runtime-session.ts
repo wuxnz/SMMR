@@ -1,7 +1,7 @@
 import { SmmrController, type ControllerBudget, type ControllerSnapshot } from "./controller"
 import type { Evidence } from "./evidence"
 import type { Reflection, WorkflowState } from "./workflow"
-import { SMMR_SKILL_REGISTRY, type SmmrSkillDescriptor } from "./skills"
+import { getSmmrSkillForState, SMMR_SKILL_REGISTRY, type SmmrSkillDescriptor } from "./skills"
 
 export interface SmmrRuntimeSettings {
   readonly enabled?: boolean
@@ -44,6 +44,11 @@ export class SmmrRuntimeSession {
 
   snapshot(): ControllerSnapshot | undefined {
     return this.controller?.snapshot()
+  }
+
+  nextSkill(): SmmrSkillDescriptor | undefined {
+    const state = this.snapshot()?.state
+    return state === undefined ? undefined : getSmmrSkillForState(state)
   }
 
   advance(): WorkflowState {
