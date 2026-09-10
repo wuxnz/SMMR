@@ -63,7 +63,7 @@ merged:
 | Research | In progress | `@smmr/research` bounded provider contract, deduplication, citations, and evidence budgets |
 | Evaluation | In progress | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | In progress | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
-| Identity foundation | In progress | additive launcher/env identity, canonical config reads, migration primitive, `.smmr/rules`, and boulder-state paths |
+| Identity foundation | In progress | additive launcher/env identity, canonical config reads, migration primitive, `.smmr/rules`, boulder-state, and team paths |
 | Host integration | Planned | opt-in SMMR configuration and OpenCode adapter wiring |
 
 The SMMR packages are intentionally harness-neutral. They do not import
@@ -172,6 +172,8 @@ Workspace rule discovery likewise prefers project and user `.smmr/rules`
 directories, while retaining `.omo/rules` as a readable legacy source.
 Boulder state now writes to `.smmr/boulder.json` and reads `.omo/boulder.json`
 when no canonical state exists, preserving active work during migration.
+Team specifications now use `.smmr/teams` and the canonical user `~/.smmr`
+base by default, while discovery falls back to existing `.omo/teams` data.
 
 ## Development
 

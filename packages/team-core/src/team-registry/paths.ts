@@ -5,6 +5,9 @@ import path from "node:path"
 import type { TeamModeConfig } from "../config"
 import { log } from "../logger"
 
+const SMMR_WORKSPACE_DIR = ".smmr"
+const LEGACY_WORKSPACE_DIR = ".omo"
+
 type TeamSpecEntry = {
   name: string
   scope: "project" | "user"
@@ -27,7 +30,7 @@ const defaultPathDeps = {
 
 function getTeamDirectory(baseDir: string, teamName: string, scope: "user" | "project", projectRoot?: string): string {
   if (scope === "project") {
-    return path.join(projectRoot ?? "", ".omo", "teams", teamName)
+    return path.join(projectRoot ?? "", SMMR_WORKSPACE_DIR, "teams", teamName)
   }
 
   return path.join(baseDir, "teams", teamName)
@@ -66,7 +69,11 @@ function resolveContainedPath(baseDir: string, pathSegments: readonly string[]):
 }
 
 export function resolveBaseDir(config: TeamModeConfig): string {
-  return expandHomeDirectory(config.base_dir ?? path.join(homedir(), ".omo"))
+  return expandHomeDirectory(config.base_dir ?? path.join(homedir(), SMMR_WORKSPACE_DIR))
+}
+
+function resolveLegacyBaseDir(config: TeamModeConfig): string {
+  return expandHomeDirectory(config.base_dir ?? path.join(homedir(), LEGACY_WORKSPACE_DIR))
 }
 
 function expandHomeDirectory(directoryPath: string): string {
@@ -149,12 +156,18 @@ export async function discoverTeamSpecs(
   deps: Pick<PathDeps, "log"> = defaultPathDeps,
 ): Promise<Array<{ name: string; scope: "project" | "user"; path: string }>> {
   const baseDir = resolveBaseDir(config)
-  const projectTeamsDir = path.resolve(projectRoot, ".omo", "teams")
-  const userTeamsDir = path.resolve(baseDir, "teams")
+  const canonicalProjectTeamsDir = path.resolve(projectRoot, SMMR_WORKSPACE_DIR, "teams")
+  const legacyProjectTeamsDir = path.resolve(projectRoot, LEGACY_WORKSPACE_DIR, "teams")
+  const canonicalUserTeamsDir = path.resolve(baseDir, "teams")
+  const legacyUserTeamsDir = path.resolve(resolveLegacyBaseDir(config), "teams")
 
+  const [canonicalProjectSpecs, canonicalUserSpecs] = await Promise.all([
+    readTeamSpecDirectories(canonicalProjectTeamsDir, "project"),
+    readTeamSpecDirectories(canonicalUserTeamsDir, "user"),
+  ])
   const [projectTeamSpecs, userTeamSpecs] = await Promise.all([
-    readTeamSpecDirectories(projectTeamsDir, "project"),
-    readTeamSpecDirectories(userTeamsDir, "user"),
+    canonicalProjectSpecs.length > 0 ? canonicalProjectSpecs : readTeamSpecDirectories(legacyProjectTeamsDir, "project"),
+    canonicalUserSpecs.length > 0 ? canonicalUserSpecs : readTeamSpecDirectories(legacyUserTeamsDir, "user"),
   ])
 
   const discoveredTeamSpecs: TeamSpecEntry[] = [...projectTeamSpecs]

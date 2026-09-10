@@ -29,7 +29,7 @@ describe("paths", () => {
     }))
   })
 
-  test("resolveBaseDir defaults to ~/.omo", () => {
+  test("resolveBaseDir defaults to ~/.smmr", () => {
     // given
     const config = TeamModeConfigSchema.parse({ base_dir: undefined })
 
@@ -37,7 +37,7 @@ describe("paths", () => {
     const resolvedBaseDir = resolveBaseDir(config)
 
     // then
-    expect(resolvedBaseDir).toBe(path.join(homedir(), ".omo"))
+    expect(resolvedBaseDir).toBe(path.join(homedir(), ".smmr"))
   })
 
   test("resolveBaseDir honors override", () => {
@@ -60,6 +60,19 @@ describe("paths", () => {
 
     // then
     expect(resolvedBaseDir).toBe(path.join(homedir(), ".omo"))
+  })
+
+  test("discoverTeamSpecs falls back to legacy .omo project storage", async () => {
+    const rootDirectory = await createTemporaryRoot()
+    temporaryDirectories.push(rootDirectory)
+    const projectRoot = path.join(rootDirectory, "project")
+    const legacyTeamDir = path.join(projectRoot, ".omo", "teams", "legacy")
+    await mkdir(legacyTeamDir, { recursive: true })
+    await writeFile(path.join(legacyTeamDir, "config.json"), "{}")
+
+    const teamSpecs = await discoverTeamSpecs(TeamModeConfigSchema.parse({ base_dir: path.join(rootDirectory, "home", ".smmr") }), projectRoot)
+
+    expect(teamSpecs.map((entry) => entry.path)).toEqual([path.join(legacyTeamDir, "config.json")])
   })
 
   test("#given team runtime ids contain traversal #when runtime paths are built #then they are rejected before escaping base dir", () => {
