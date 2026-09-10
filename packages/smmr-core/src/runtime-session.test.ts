@@ -28,4 +28,14 @@ describe("SmmrRuntimeSession", () => {
     expect(session.allowNetwork).toBe(false)
     expect(session.snapshot()?.state).toBe("DISCOVER")
   })
+
+  test("enforces operation permissions before running adapter work", async () => {
+    const session = new SmmrRuntimeSession({
+      objective: "research a provider",
+      settings: { enabled: true, allow_research: true },
+    })
+    await expect(session.execute("research", () => "source-result")).resolves.toBe("source-result")
+    await expect(session.execute("network", () => "should-not-run")).rejects.toThrow("network permission")
+    expect(session.advance()).toBe("UNDERSTAND")
+  })
 })
