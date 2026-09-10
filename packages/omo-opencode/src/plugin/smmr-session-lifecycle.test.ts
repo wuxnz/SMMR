@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { SmmrRuntimeSession } from "@smmr/core"
-import { removeDeletedSmmrSession } from "./smmr-session-lifecycle"
+import { advanceSmmrSessionAfterTool, removeDeletedSmmrSession } from "./smmr-session-lifecycle"
 
 describe("removeDeletedSmmrSession", () => {
   test("removes a session using the current event shape", () => {
@@ -32,5 +32,16 @@ describe("removeDeletedSmmrSession", () => {
         sessions,
       ),
     ).toBe(true)
+  })
+})
+
+describe("advanceSmmrSessionAfterTool", () => {
+  test("advances after successful tool output and ignores failed output", async () => {
+    const sessions = new Map([
+      ["s1", new SmmrRuntimeSession({ objective: "x", settings: { enabled: true } })],
+    ])
+    await expect(advanceSmmrSessionAfterTool({ sessionID: "s1", tool: "glob" }, { output: "ok" }, sessions)).resolves.toBe(true)
+    expect(sessions.get("s1")?.snapshot()?.state).toBe("UNDERSTAND")
+    await expect(advanceSmmrSessionAfterTool({ sessionID: "s1", tool: "glob" }, undefined, sessions)).resolves.toBe(false)
   })
 })

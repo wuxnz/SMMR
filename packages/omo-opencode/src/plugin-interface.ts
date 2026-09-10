@@ -16,7 +16,7 @@ import { createToolExecuteAfterHandler } from "./plugin/tool-execute-after"
 import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
 import { log } from "./shared/logger"
 import { createSmmrChatSession } from "./plugin/smmr-chat-session"
-import { removeDeletedSmmrSession } from "./plugin/smmr-session-lifecycle"
+import { advanceSmmrSessionAfterTool, removeDeletedSmmrSession } from "./plugin/smmr-session-lifecycle"
 import { getSmmrSystemPolicy } from "./plugin/smmr-system-policy"
 
 import type { CreatedHooks } from "./create-hooks"
@@ -130,9 +130,16 @@ export function createPluginInterface(args: {
       backgroundManager: managers.backgroundManager,
     }),
 
-    "tool.execute.after": createToolExecuteAfterHandler({
-      ctx,
-      hooks,
-    }),
+    "tool.execute.after": async (input, output) => {
+      await createToolExecuteAfterHandler({ ctx, hooks })(input, output)
+      try {
+        await advanceSmmrSessionAfterTool(input, output, smmrSessions)
+      } catch (error) {
+        log("[smmr] tool completion did not advance runtime session", {
+          sessionID: input.sessionID,
+          error: error instanceof Error ? error.message : String(error),
+        })
+      }
+    },
   }
 }
