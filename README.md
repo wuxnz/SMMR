@@ -63,7 +63,7 @@ merged:
 | Research | In progress | `@smmr/research` bounded provider contract, deduplication, citations, and evidence budgets |
 | Evaluation | In progress | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | In progress | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
-| Identity foundation | In progress | additive `smmr` launcher alias and canonical `SMMR_*`/legacy `OMO_*` naming primitives |
+| Identity foundation | In progress | additive launcher/env identity, canonical config reads, and idempotent config migration primitive |
 | Host integration | Planned | opt-in SMMR configuration and OpenCode adapter wiring |
 
 The SMMR packages are intentionally harness-neutral. They do not import
@@ -165,6 +165,9 @@ policy above as claiming that the legacy adapter has already been migrated.
 The additive identity migration now reads `~/.smmr/smmr.json[c]` and project
 `.smmr/smmr.json[c]` files first, while continuing to read the corresponding
 `.omo/omo.json[c]` files when no canonical file is present.
+The shared config core also exposes a no-clobber, journaled migration primitive
+for moving a legacy user file into `~/.smmr/smmr.jsonc`; wiring that primitive
+into each host's startup sequence remains part of host integration.
 
 ## Development
 
