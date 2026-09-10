@@ -13,6 +13,21 @@ describe("SmmrController", () => {
     expect(controller.snapshot().evidenceBundles[0]?.relevantFiles).toEqual(["src/index.ts"])
   })
 
+  test("isolates nested bundle state in snapshots", () => {
+    const controller = new SmmrController({ objective: "inspect" })
+    controller.recordEvidenceBundle(createEvidenceBundle({
+      task: { description: "inspect" },
+      repository: { framework: "Bun" },
+      relevantFiles: ["src/index.ts"],
+    }))
+    const snapshot = controller.snapshot()
+    ;(snapshot.evidenceBundles[0]?.relevantFiles as string[]).push("src/other.ts")
+    ;(snapshot.evidenceBundles[0]?.repository as Record<string, string>).framework = "Node"
+    const fresh = controller.snapshot().evidenceBundles[0]
+    expect(fresh?.relevantFiles).toEqual(["src/index.ts"])
+    expect(fresh?.repository).toEqual({ framework: "Bun" })
+  })
+
   test("walks the deterministic workflow and preserves evidence", () => {
     const controller = new SmmrController({ objective: "fix the bug", clock: () => "now" })
     controller.recordEvidence(createEvidence({ id: "e1", kind: "test", claim: "test exists", content: "ok", confidence: 1, verified: true, recordedAt: "now" }))
