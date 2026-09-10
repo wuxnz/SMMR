@@ -58,7 +58,7 @@ merged:
 | Controller | Implemented | `@smmr/core` deterministic workflow, budgets, loop detection, reflections, evidence |
 | Models | In progress | `@smmr/models` normalized protocol, Ollama adapter, deterministic mock adapter |
 | Memory | In progress | `@smmr/memory` policy, scoring, decay, bounded store; backed by existing memory foundation |
-| RAG | Planned | lexical, structural, test, external, and experience retrieval |
+| RAG | In progress | `@smmr/rag` lexical ranking, document graph, related-test mapping, and bounded evidence context |
 | Execution | Planned | sandboxed commands, diagnostics, failure taxonomy, repair policies |
 | Research | Planned | bounded web/browser research with source evidence |
 | Evaluation | Planned | trajectory metrics and SMMR-Bench |
@@ -192,7 +192,7 @@ The implementation sequence is:
 
 1. deterministic controller and normalized model protocol;
 2. tripartite memory and write policy (`@smmr/memory`);
-3. repository RAG and evidence bundles;
+3. repository RAG and evidence bundles (`@smmr/rag`);
 4. execution, diagnostics, and repair policies;
 5. bounded research and citation capture;
 6. evaluation, trajectory export, and training scaffolds;
