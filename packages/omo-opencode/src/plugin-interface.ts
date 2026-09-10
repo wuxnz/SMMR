@@ -1,5 +1,6 @@
 import type { PluginContext, PluginInterface, ToolsRecord } from "./plugin/types"
 import type { OhMyOpenCodeConfig } from "./config"
+import { SmmrRuntimeSession } from "@smmr/core"
 
 import { applyAgentVariant } from "./shared/agent-variant"
 import { createChatParamsHandler } from "./plugin/chat-params"
@@ -13,6 +14,8 @@ import { createEventHandler } from "./plugin/event"
 import { createToolDefinitionHandler } from "./plugin/tool-definition"
 import { createToolExecuteAfterHandler } from "./plugin/tool-execute-after"
 import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
+import { extractPromptText } from "./hooks/auto-slash-command/detector"
+import { log } from "./shared/logger"
 
 import type { CreatedHooks } from "./create-hooks"
 import type { Managers } from "./create-managers"
@@ -32,6 +35,14 @@ export function createPluginInterface(args: {
 }): PluginInterface {
   const { ctx, pluginConfig, firstMessageVariantGate, managers, hooks, tools } =
     args
+
+  const smmrSessions = new Map<string, SmmrRuntimeSession>()
+  const chatMessageHandler = createChatMessageHandler({
+    ctx,
+    pluginConfig,
+    firstMessageVariantGate,
+    hooks,
+  })
 
   return {
     tool: tools,
@@ -65,12 +76,24 @@ export function createPluginInterface(args: {
       hooks,
     }),
 
-    "chat.message": createChatMessageHandler({
-      ctx,
-      pluginConfig,
-      firstMessageVariantGate,
-      hooks,
-    }),
+    "chat.message": async (input, output) => {
+      if (pluginConfig.smmr?.enabled === true && !smmrSessions.has(input.sessionID)) {
+        const objective = extractPromptText(output.parts).trim()
+        if (objective.length > 0) {
+          const session = new SmmrRuntimeSession({ objective, settings: pluginConfig.smmr })
+          smmrSessions.set(input.sessionID, session)
+          log("[smmr] runtime session created", {
+            sessionID: input.sessionID,
+            state: session.snapshot()?.state,
+            model: session.model,
+            allowNetwork: session.allowNetwork,
+            allowMemoryWrites: session.allowMemoryWrites,
+            allowResearch: session.allowResearch,
+          })
+        }
+      }
+      await chatMessageHandler(input, output)
+    },
 
     "experimental.chat.messages.transform": createMessagesTransformHandler({
       hooks,
