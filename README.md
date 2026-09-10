@@ -91,7 +91,7 @@ slices are merged and independently testable:
 | Research | Implemented | `@smmr/research` bounded provider contract, deduplication, citations, and evidence budgets |
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
-| Identity foundation | In progress | additive launcher/env identity, canonical config reads, migration primitive, `.smmr/rules`, boulder-state, and team paths |
+| Identity foundation | In progress | additive launcher/env identity, canonical config reads, startup-wired no-clobber migration, `.smmr/rules`, boulder-state, and team paths |
 | Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, permission-checked execution and evidence capture after successful tool completions, and per-session operating-policy injection; host adapters still need to wire specialized external operations |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
