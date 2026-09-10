@@ -61,6 +61,12 @@ future host adapters:
 These are harness-neutral skill assets. OpenCode startup recognition is staged;
 the controller still needs to invoke the skills as part of host integration.
 
+The harness-neutral runtime boundary is now available as
+`SmmrRuntimeSession` in `@smmr/core`. It combines the opt-in settings with a
+deterministic controller, exposes the selected model and permission decisions,
+and remains inert until `smmr.enabled` is explicitly true. Host adapters can
+own this session without importing a harness API.
+
 ## Current status
 
 SMMR is under active implementation. The harness-neutral intelligence-layer
