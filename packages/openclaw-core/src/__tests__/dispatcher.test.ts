@@ -183,6 +183,22 @@ describe("OpenClaw Dispatcher", () => {
     }
   })
 
+  test("resolveCommandTimeoutMs prefers the canonical SMMR env", () => {
+    const originalSmmr = process.env.SMMR_OPENCLAW_COMMAND_TIMEOUT_MS
+    const originalOmo = process.env.OMO_OPENCLAW_COMMAND_TIMEOUT_MS
+    process.env.SMMR_OPENCLAW_COMMAND_TIMEOUT_MS = "6789"
+    process.env.OMO_OPENCLAW_COMMAND_TIMEOUT_MS = "4321"
+
+    try {
+      expect(resolveCommandTimeoutMs(undefined)).toBe(6789)
+    } finally {
+      if (originalSmmr === undefined) delete process.env.SMMR_OPENCLAW_COMMAND_TIMEOUT_MS
+      else process.env.SMMR_OPENCLAW_COMMAND_TIMEOUT_MS = originalSmmr
+      if (originalOmo === undefined) delete process.env.OMO_OPENCLAW_COMMAND_TIMEOUT_MS
+      else process.env.OMO_OPENCLAW_COMMAND_TIMEOUT_MS = originalOmo
+    }
+  })
+
   test("resolveCommandTimeoutMs clamps explicit and env timeout values", () => {
     expect(resolveCommandTimeoutMs(99)).toBe(100)
     expect(resolveCommandTimeoutMs(300_001)).toBe(300_000)

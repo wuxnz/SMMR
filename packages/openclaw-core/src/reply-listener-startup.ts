@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto"
+import { resolveSmmrEnv } from "@oh-my-opencode/utils"
 import type { ReplyListenerDaemonState } from "./reply-listener-state"
 
 const DEFAULT_REPLY_LISTENER_STARTUP_TIMEOUT_MS = 500
@@ -21,7 +22,7 @@ export function createReplyListenerStartupToken(): string {
 }
 
 export function getReplyListenerStartupTimeoutMs(): number {
-  const raw = process.env.OMO_OPENCLAW_REPLY_LISTENER_STARTUP_TIMEOUT_MS
+  const raw = resolveSmmrEnv("OPENCLAW_REPLY_LISTENER_STARTUP_TIMEOUT_MS")
   if (!raw) return DEFAULT_REPLY_LISTENER_STARTUP_TIMEOUT_MS
 
   const parsed = Number.parseInt(raw, 10)
