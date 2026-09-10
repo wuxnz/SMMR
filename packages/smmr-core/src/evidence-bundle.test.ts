@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { createEvidenceBundle } from "./evidence-bundle"
+import { createEvidenceBundle, MAX_EVIDENCE_BUNDLE_CONTEXT_CHARS } from "./evidence-bundle"
 
 describe("createEvidenceBundle", () => {
   test("normalizes the structured evidence sections", () => {
@@ -34,5 +34,13 @@ describe("createEvidenceBundle", () => {
     repository.framework = "Node"
     expect(bundle.relevantFiles).toEqual(["src/index.ts"])
     expect(bundle.repository).toEqual({ framework: "Bun" })
+  })
+
+  test("bounds retrieval context at the shared contract", () => {
+    const bundle = createEvidenceBundle({
+      task: { description: "Inspect" },
+      retrievalContext: "x".repeat(MAX_EVIDENCE_BUNDLE_CONTEXT_CHARS + 100),
+    })
+    expect(bundle.retrievalContext).toHaveLength(MAX_EVIDENCE_BUNDLE_CONTEXT_CHARS)
   })
 })

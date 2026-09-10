@@ -11,6 +11,8 @@ export interface EvidenceBundleInput {
   readonly retrievedSources?: readonly string[]
 }
 
+export const MAX_EVIDENCE_BUNDLE_CONTEXT_CHARS = 12_000
+
 export interface EvidenceBundle {
   readonly task: { readonly description: string }
   readonly repository: Readonly<Record<string, string>>
@@ -40,7 +42,7 @@ export function createEvidenceBundle(input: EvidenceBundleInput): EvidenceBundle
     similarIssues: copyList(input.similarIssues),
     previousExperiences: copyList(input.previousExperiences),
     constraints: copyList(input.constraints),
-    retrievalContext: input.retrievalContext ?? "",
+    retrievalContext: (input.retrievalContext ?? "").slice(0, MAX_EVIDENCE_BUNDLE_CONTEXT_CHARS),
     retrievedSources: copyList(input.retrievedSources),
   }
 }
