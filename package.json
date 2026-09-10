@@ -29,6 +29,7 @@
     "packages/smmr-memory",
     "packages/smmr-rag",
     "packages/smmr-execution",
+    "packages/smmr-research",
     "packages/telemetry-core",
     "packages/claude-code-compat-core",
     "packages/skills-loader-core",
