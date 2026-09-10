@@ -400,6 +400,13 @@
         "zod": "^4.4.3",
       },
     },
+    "packages/smmr-eval": {
+      "name": "@smmr/eval",
+      "version": "0.1.0",
+      "devDependencies": {
+        "bun-types": "1.4.2",
+      },
+    },
     "packages/smmr-execution": {
       "name": "@smmr/execution",
       "version": "0.1.0",
@@ -916,6 +923,8 @@
     "@smithy/util-utf8": ["@smithy/util-utf8@2.3.0", "", { "dependencies": { "@smithy/util-buffer-from": "^2.2.0", "tslib": "^2.6.2" } }, "sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A=="],
 
     "@smmr/core": ["@smmr/core@workspace:packages/smmr-core"],
+
+    "@smmr/eval": ["@smmr/eval@workspace:packages/smmr-eval"],
 
     "@smmr/execution": ["@smmr/execution@workspace:packages/smmr-execution"],
 

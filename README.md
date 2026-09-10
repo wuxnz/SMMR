@@ -61,7 +61,7 @@ merged:
 | RAG | In progress | `@smmr/rag` lexical ranking, document graph, related-test mapping, and bounded evidence context |
 | Execution | In progress | `@smmr/execution` verification checks, failure taxonomy, bounded retries, and repair hints |
 | Research | In progress | `@smmr/research` bounded provider contract, deduplication, citations, and evidence budgets |
-| Evaluation | Planned | trajectory metrics and SMMR-Bench |
+| Evaluation | In progress | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Host integration | Planned | opt-in SMMR configuration and OpenCode adapter wiring |
 
 The SMMR packages are intentionally harness-neutral. They do not import
@@ -195,7 +195,7 @@ The implementation sequence is:
 3. repository RAG and evidence bundles (`@smmr/rag`);
 4. execution, diagnostics, and repair policies (`@smmr/execution`);
 5. bounded research and citation capture (`@smmr/research`);
-6. evaluation, trajectory export, and training scaffolds;
+6. evaluation, trajectory export, and training scaffolds (`@smmr/eval`);
 7. opt-in host integration and local-first identity migration.
 
 Each stage is delivered as a small, independently tested change. The old OmO
