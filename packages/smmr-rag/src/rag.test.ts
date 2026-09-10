@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { compileContext, retrieveEvidence } from "./context"
+import { toSmmrEvidenceBundle } from "./core-bundle"
 import { rankLexical } from "./lexical"
 import { DocumentGraph } from "./structure"
 import type { RetrievalDocument } from "./types"
@@ -35,5 +36,14 @@ describe("SMMR retrieval", () => {
   test("compiles context without splitting a document", () => {
     const context = compileContext([{ document: documents[0]!, score: 1, reasons: [] }], 20)
     expect(context).toBe("")
+  })
+
+  test("converts retrieval results into the core evidence bundle", () => {
+    const bundle = toSmmrEvidenceBundle(retrieveEvidence(documents, { text: "login", limit: 4 }), "Fix login")
+    expect(bundle.task.description).toBe("Fix login")
+    expect(bundle.relevantFiles).toContain("src/auth/login.ts")
+    expect(bundle.localExamples).toContain("src/auth/login.test.ts")
+    expect(bundle.retrievalContext).toContain("src/auth/login.ts")
+    expect(bundle.retrievedSources).toContain("src/routes.ts")
   })
 })

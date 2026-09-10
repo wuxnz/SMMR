@@ -102,7 +102,7 @@ The implementation boundary is intentionally split:
 
 | Surface | Current state |
 | --- | --- |
-| Harness-neutral SMMR packages | Core controller, model, memory, retrieval, execution, research, evaluation, training, and structured Evidence Bundle contracts are implemented and independently tested. |
+| Harness-neutral SMMR packages | Core controller, model, memory, retrieval, execution, research, evaluation, training, and structured Evidence Bundle contracts are implemented and independently tested; RAG converts retrieval results into core bundles. |
 | OpenCode runtime | Opt-in sessions, model routing, policy injection, pre-tool permission checks, successful-tool advancement, and bounded redacted evidence are wired. |
 | OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
 | Codex and Senpi | Existing compatibility runtimes remain available, but they do not consume the SMMR config block yet. |
