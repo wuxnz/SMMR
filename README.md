@@ -177,6 +177,13 @@ base by default, while discovery falls back to existing `.omo/teams` data.
 These path changes are compatibility-aware library behavior; they do not yet
 make the SMMR controller the default host runtime.
 
+The config contract now reserves an opt-in root `smmr` block. Its resolved
+defaults are `enabled: false`, `allow_network: false`,
+`allow_memory_writes: false`, and `allow_research: false`; an optional
+`model` selects the normalized SMMR provider. The block is accepted by the
+shared config schema now, while controller startup and the five foundational
+skills remain part of host integration.
+
 ## Development
 
 Install the repository dependencies with Bun:
