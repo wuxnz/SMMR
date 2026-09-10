@@ -244,9 +244,9 @@ now dispatch registered foundational skills through the permission boundary
 and inject the bounded operating policy into that session's system context,
 and deterministically selects the next foundational skill from the controller
 state. `runNextSkill` gives adapters a bounded execution primitive that advances
-only after success. OpenCode tool completions consume it and record a verified
-controller-owned observation for the active session; failed completions record
-neither progress nor evidence. Specialized research,
+only after success. OpenCode tool completions consume it and record a verified,
+bounded output excerpt in the controller-owned observation for the active
+session; failed completions record neither progress nor evidence. Specialized research,
 retrieval, verification, and memory operations still need dedicated adapter
 wiring.
 
