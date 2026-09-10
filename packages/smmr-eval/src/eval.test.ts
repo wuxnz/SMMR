@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test"
 import { aggregateMetrics, measureTrajectory } from "./metrics"
 import { TrajectoryRecorder } from "./recorder"
+import { recordEvidenceBundle } from "./evidence-bundle"
+import { createEvidenceBundle } from "@smmr/core"
 import type { TrajectoryEvent } from "./types"
 
 const event = (kind: TrajectoryEvent["kind"], name: string, payload: Record<string, unknown> = {}): TrajectoryEvent => ({ kind, name, payload, timestamp: "2026-09-10T00:00:01.000Z" })
@@ -29,5 +31,23 @@ describe("SMMR evaluation", () => {
     const recorder = new TrajectoryRecorder({ id: "run", task: "task", model: "mock" })
     recorder.complete(false)
     expect(() => recorder.complete(true)).toThrow("already complete")
+  })
+
+  test("records a core evidence bundle as a trajectory event", () => {
+    const recorder = new TrajectoryRecorder({ id: "run", task: "task", model: "mock" })
+    recordEvidenceBundle(
+      recorder,
+      createEvidenceBundle({
+        task: { description: "task" },
+        previousExperiences: ["semantic:auth-fact"],
+        retrievalContext: "verified context",
+        retrievedSources: ["auth-fact"],
+      }),
+      "2026-09-10T00:00:01.000Z",
+    )
+    const trajectory = recorder.snapshot()
+    expect(trajectory.events[0]?.name).toBe("evidence-bundle")
+    expect(trajectory.events[0]?.payload.retrievalContext).toBe("verified context")
+    expect(measureTrajectory(trajectory).evidenceEvents).toBe(1)
   })
 })
