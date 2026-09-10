@@ -2,7 +2,7 @@ import type { ModelAdapter, ModelResponse, ModelToolCall } from "./types"
 
 export interface OllamaAdapterOptions {
   readonly baseUrl?: string
-  readonly fetchImpl?: (input: URL | RequestInfo, init?: RequestInit) => Promise<Response>
+  readonly fetchImpl?: (input: Parameters<typeof fetch>[0], init?: RequestInit) => Promise<Response>
 }
 
 interface OllamaToolCall {

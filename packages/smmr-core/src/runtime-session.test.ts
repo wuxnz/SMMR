@@ -1,12 +1,27 @@
 import { describe, expect, test } from "bun:test"
 import { SmmrRuntimeSession } from "./runtime-session"
 import { createEvidenceBundle } from "./evidence-bundle"
+import { createMockAdapter } from "@smmr/models"
 
 describe("SmmrRuntimeSession", () => {
   test("records evidence bundles through the controller boundary", () => {
     const session = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
     session.recordEvidenceBundle(createEvidenceBundle({ task: { description: "inspect" } }))
     expect(session.snapshot()?.evidenceBundles).toHaveLength(1)
+  })
+
+  test("completes a configured model through the normalized adapter", async () => {
+    const session = new SmmrRuntimeSession({ objective: "plan", settings: { enabled: true, model: "mock" } })
+    const model = createMockAdapter({
+      responses: [{ id: "m1", model: "mock", content: "plan", toolCalls: [], finishReason: "stop" }],
+    })
+    await expect(session.completeModel(model, { messages: [{ role: "user", content: "plan" }] })).resolves.toMatchObject({ content: "plan" })
+    expect(model.requests[0]?.model).toBe("mock")
+  })
+
+  test("rejects model completion without an enabled configured session", async () => {
+    const model = createMockAdapter()
+    await expect(new SmmrRuntimeSession({ objective: "plan" }).completeModel(model, { messages: [] })).rejects.toThrow("model is not configured")
   })
 
   test("keeps absent configuration inert and denies permissions", () => {
