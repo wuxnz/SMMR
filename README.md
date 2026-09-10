@@ -63,6 +63,7 @@ merged:
 | Research | In progress | `@smmr/research` bounded provider contract, deduplication, citations, and evidence budgets |
 | Evaluation | In progress | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | In progress | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
+| Identity foundation | In progress | additive `smmr` launcher alias and canonical `SMMR_*`/legacy `OMO_*` naming primitives |
 | Host integration | Planned | opt-in SMMR configuration and OpenCode adapter wiring |
 
 The SMMR packages are intentionally harness-neutral. They do not import
@@ -139,6 +140,9 @@ npm i -g omo-ai@beta
 omo
 ```
 
+The compatibility package also exposes an additive `smmr` launcher alias. The
+alias does not rename or remove the existing OmO commands.
+
 These commands install the compatibility runtime; they do not yet enable the
 SMMR controller automatically. SMMR host integration is an explicit roadmap
 item so the existing OmO behavior remains safe while the new contracts mature.
@@ -200,7 +204,8 @@ The implementation sequence is:
 5. bounded research and citation capture (`@smmr/research`);
 6. evaluation and trajectory metrics (`@smmr/eval`);
 7. training scaffolds and trajectory export (`@smmr/training`);
-8. opt-in host integration and local-first identity migration.
+8. additive identity foundation and local-first migration;
+9. opt-in host integration.
 
 Each stage is delivered as a small, independently tested change. The old OmO
 surface remains readable until the SMMR replacement has equivalent coverage.

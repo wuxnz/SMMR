@@ -1,0 +1,5 @@
+export const SMMR_BRAND_NAME = "SMMR"
+export const SMMR_CONFIG_BASE = "smmr"
+export const SMMR_WORKSPACE_DIR = ".smmr"
+export const OMO_LEGACY_CONFIG_BASE = "omo"
+export const OMO_LEGACY_WORKSPACE_DIR = ".omo"
