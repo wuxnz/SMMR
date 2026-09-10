@@ -14,8 +14,8 @@ import { createEventHandler } from "./plugin/event"
 import { createToolDefinitionHandler } from "./plugin/tool-definition"
 import { createToolExecuteAfterHandler } from "./plugin/tool-execute-after"
 import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
-import { extractPromptText } from "./hooks/auto-slash-command/detector"
 import { log } from "./shared/logger"
+import { createSmmrChatSession } from "./plugin/smmr-chat-session"
 
 import type { CreatedHooks } from "./create-hooks"
 import type { Managers } from "./create-managers"
@@ -78,10 +78,8 @@ export function createPluginInterface(args: {
 
     "chat.message": async (input, output) => {
       if (pluginConfig.smmr?.enabled === true && !smmrSessions.has(input.sessionID)) {
-        const objective = extractPromptText(output.parts).trim()
-        if (objective.length > 0) {
-          const session = new SmmrRuntimeSession({ objective, settings: pluginConfig.smmr })
-          smmrSessions.set(input.sessionID, session)
+        const session = createSmmrChatSession(pluginConfig, input.sessionID, output.parts, smmrSessions)
+        if (session !== undefined) {
           log("[smmr] runtime session created", {
             sessionID: input.sessionID,
             state: session.snapshot()?.state,

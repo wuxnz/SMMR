@@ -4,6 +4,7 @@
 
 - `bun install --frozen-lockfile` in the isolated worktree.
 - `bun run --cwd packages/omo-opencode typecheck`.
+- `bun test packages/omo-opencode/src/plugin/smmr-chat-session.test.ts`.
 - `bun run build`.
 - Disposable OpenCode run with an enabled SMMR project config was attempted;
   its model call stopped because no provider was configured.
@@ -11,6 +12,8 @@
 ## What was observed
 
 - The adapter compiles with `@smmr/core` and the full repository build passes.
+- 2 focused session-bridge tests passed with 8 assertions, covering explicit
+  creation, disabled/empty input, and duplicate session suppression.
 - Enabled chat messages now create one `SmmrRuntimeSession` per OpenCode
   session from the first non-empty objective; absent/disabled config remains
   inert by construction.
