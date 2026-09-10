@@ -42,6 +42,7 @@ describe("advanceSmmrSessionAfterTool", () => {
     ])
     await expect(advanceSmmrSessionAfterTool({ sessionID: "s1", tool: "glob" }, { output: "ok" }, sessions)).resolves.toBe(true)
     expect(sessions.get("s1")?.snapshot()?.state).toBe("UNDERSTAND")
+    expect(sessions.get("s1")?.snapshot()?.evidence).toHaveLength(1)
     await expect(advanceSmmrSessionAfterTool({ sessionID: "s1", tool: "glob" }, undefined, sessions)).resolves.toBe(false)
   })
 })

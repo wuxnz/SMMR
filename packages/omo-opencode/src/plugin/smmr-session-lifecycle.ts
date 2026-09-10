@@ -1,4 +1,4 @@
-import type { SmmrRuntimeSession } from "@smmr/core"
+import { createEvidence, type SmmrRuntimeSession } from "@smmr/core"
 
 export function removeDeletedSmmrSession(
   input: unknown,
@@ -28,5 +28,16 @@ export async function advanceSmmrSessionAfterTool(
   const session = sessions.get(input.sessionID)
   if (!session || typeof input.tool !== "string") return false
   await session.runNextSkill(() => input.tool as string)
+  session.recordEvidence(
+    createEvidence({
+      id: `opencode-tool:${input.sessionID}:${input.tool}:${Date.now()}`,
+      kind: "observation",
+      claim: `OpenCode tool ${input.tool} completed successfully`,
+      content: "The OpenCode tool-execute-after lifecycle completed with output.",
+      source: input.tool,
+      confidence: 1,
+      verified: true,
+    }),
+  )
   return true
 }
