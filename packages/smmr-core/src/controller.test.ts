@@ -40,6 +40,14 @@ describe("SmmrController", () => {
     expect(fresh?.repository).toEqual({ framework: "Bun" })
   })
 
+  test("isolates flat evidence state in snapshots", () => {
+    const controller = new SmmrController({ objective: "inspect" })
+    controller.recordEvidence(createEvidence({ id: "e1", kind: "test", claim: "verified", content: "ok", confidence: 1, verified: true }))
+    const snapshot = controller.snapshot()
+    ;(snapshot.evidence[0] as { content: string }).content = "tampered"
+    expect(controller.snapshot().evidence[0]?.content).toBe("ok")
+  })
+
   test("walks the deterministic workflow and preserves evidence", () => {
     const controller = new SmmrController({ objective: "fix the bug", clock: () => "now" })
     controller.recordEvidence(createEvidence({ id: "e1", kind: "test", claim: "test exists", content: "ok", confidence: 1, verified: true, recordedAt: "now" }))
