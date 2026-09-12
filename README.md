@@ -98,13 +98,14 @@ slices are merged and independently testable:
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, startup-wired no-clobber migration, `.smmr/rules`, boulder-state, and team paths |
-| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, explicit research/network/memory-write permission routing, bounded structured evidence capture, and per-session operating-policy injection; provider-specific host adapters still need to wire specialized external operations |
+| Host integration | In progress | opt-in `smmr` config, OpenCode and Codex session boundaries, deterministic next-skill planning, explicit research/network/memory-write permission routing, snapshot persistence, bounded structured evidence capture, and per-session policy injection; Senpi and provider-specific host adapters remain in progress |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
 contract without changing legacy behavior when SMMR is disabled. Codex and
-Senpi already load the unified typed configuration, including the `smmr` block,
-but runtime-session activation and SMMR operation wiring remain future work in
-those adapters.
+Senpi load the unified typed configuration, including the `smmr` block. Codex
+now has an opt-in per-session hook bridge for policy injection, permission
+checks, snapshot persistence, and tool evidence; Senpi runtime activation and
+provider-specific operation wiring remain future work.
 
 The implementation boundary is intentionally split:
 
@@ -113,7 +114,7 @@ The implementation boundary is intentionally split:
 | Harness-neutral SMMR packages | Core controller, normalized model protocol, validated evidence, atomic evidence-first completion, resumable snapshot restoration, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested. |
 | OpenCode runtime | Opt-in sessions, model routing, policy injection, explicit specialized-operation permission checks, successful-tool advancement, and bounded redacted model/tool flat and structured evidence are wired. |
 | OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
-| Codex and Senpi | Existing compatibility runtimes load the unified typed config and expose the `smmr` settings to their harness views; they do not yet instantiate `SmmrRuntimeSession` or execute SMMR operations. |
+| Codex and Senpi | Codex loads the unified typed config and has an opt-in hook bridge for session policy, permissions, resumable state, and evidence; Senpi loads the config but does not yet instantiate `SmmrRuntimeSession`. |
 
 ## Architecture
 
@@ -205,8 +206,9 @@ alias does not rename or remove the existing OmO commands.
 
 These commands install the compatibility runtime. SMMR remains opt-in: add a
 root `smmr` block with `enabled: true` to activate the OpenCode per-chat
-session bridge. Codex and Senpi load the same typed block through the unified
-config surface, but their runtime session bridges are not enabled yet.
+session bridge. Codex also consumes the same typed block through its hook
+bridge; Senpi loads it through the unified config surface but its runtime
+session bridge is not enabled yet.
 
 For a project-local OpenCode opt-in, create `.smmr/smmr.jsonc` (or place the
 same block in the compatible `.omo/omo.jsonc` configuration):
@@ -285,8 +287,9 @@ for the active session; restricted research, memory-write, and known
 network-capable tools are rejected before host tool execution, and failed
 completions record neither progress nor evidence.
 Specialized research, retrieval, verification, and memory operations still need
-dedicated provider adapter wiring, and Codex/Senpi still need runtime-session
-activation beyond their existing config loading.
+dedicated provider adapter wiring. Senpi still needs runtime-session activation;
+Codex currently provides the generic hook boundary but not provider-specific
+backends.
 
 ## Development
 

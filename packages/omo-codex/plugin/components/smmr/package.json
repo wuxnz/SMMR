@@ -1,0 +1,19 @@
+{
+  "name": "@sisyphuslabs/codex-smmr",
+  "version": "5.0.0-beta.52",
+  "description": "Codex runtime bridge for SMMR sessions and permissions.",
+  "type": "module",
+  "private": true,
+  "bin": { "omo-smmr": "./dist/cli.js" },
+  "files": ["dist", "hooks", "README.md"],
+  "scripts": {
+    "build": "bun build src/cli.ts --target node --format esm --outfile dist/cli.js",
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

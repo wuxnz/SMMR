@@ -15,7 +15,8 @@
 		"components/teammode",
 		"components/ulw-execute-continuation",
 		"components/ulw-loop",
-		"components/ultrawork"
+		"components/ultrawork",
+		"components/smmr"
 	],
 	"dependencies": {
 		"@oh-my-opencode/shared-skills": "file:../../shared-skills"

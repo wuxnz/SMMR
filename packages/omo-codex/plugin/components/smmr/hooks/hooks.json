@@ -1,0 +1,43 @@
+{
+	"hooks": {
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "node \"${PLUGIN_ROOT}/components/smmr/dist/cli.js\" hook user-prompt-submit",
+						"timeout": 10,
+						"statusMessage": "(OmO 5.0.0-beta.52) Applying Smmr Session Policy",
+						"commandWindows": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${PLUGIN_ROOT}\\components\\bootstrap\\scripts\\node-dispatch.ps1\" \"${PLUGIN_ROOT}\\components\\smmr\\dist\\cli.js\" hook user-prompt-submit"
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "node \"${PLUGIN_ROOT}/components/smmr/dist/cli.js\" hook pre-tool-use",
+						"timeout": 5,
+						"statusMessage": "(OmO 5.0.0-beta.52) Enforcing Smmr Permissions",
+						"commandWindows": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${PLUGIN_ROOT}\\components\\bootstrap\\scripts\\node-dispatch.ps1\" \"${PLUGIN_ROOT}\\components\\smmr\\dist\\cli.js\" hook pre-tool-use"
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "node \"${PLUGIN_ROOT}/components/smmr/dist/cli.js\" hook post-tool-use",
+						"timeout": 5,
+						"statusMessage": "(OmO 5.0.0-beta.52) Recording Smmr Evidence",
+						"commandWindows": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${PLUGIN_ROOT}\\components\\bootstrap\\scripts\\node-dispatch.ps1\" \"${PLUGIN_ROOT}\\components\\smmr\\dist\\cli.js\" hook post-tool-use"
+					}
+				]
+			}
+		]
+	}
+}
