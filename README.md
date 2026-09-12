@@ -59,8 +59,11 @@ future host adapters:
 - `smmr-memory-management` — evidence-gated episodic, semantic, and procedural memory.
 
 These are harness-neutral skill assets. OpenCode recognizes them through the
-opt-in session policy and consumes the controller's next-skill selection;
-specialized host operations still need to be wired to each skill.
+opt-in session policy and consumes the controller's next-skill selection. Its
+lifecycle also classifies research, network, memory-write, and local tool
+calls at the SMMR permission boundary and routes bounded evidence into the
+matching Evidence Bundle sections. Provider-specific host operations still
+need to be wired to each skill.
 The canonical registry in `@smmr/core` maps each skill to its required
 operation: research requires `research` permission, memory management requires
 `memory-write`, and the remaining four are local operations.
@@ -92,7 +95,7 @@ slices are merged and independently testable:
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, startup-wired no-clobber migration, `.smmr/rules`, boulder-state, and team paths |
-| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, pre-tool permission enforcement, model/tool evidence capture, and per-session operating-policy injection; host adapters still need to wire specialized external operations |
+| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, explicit research/network/memory-write permission routing, bounded structured evidence capture, and per-session operating-policy injection; provider-specific host adapters still need to wire specialized external operations |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
 contract without changing legacy behavior when SMMR is disabled; Codex and
@@ -103,7 +106,7 @@ The implementation boundary is intentionally split:
 | Surface | Current state |
 | --- | --- |
 | Harness-neutral SMMR packages | Core controller, normalized model protocol, validated evidence, atomic evidence-first completion, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested. |
-| OpenCode runtime | Opt-in sessions, model routing, policy injection, pre-tool permission checks, successful-tool advancement, and bounded redacted model/tool flat and structured evidence are wired. |
+| OpenCode runtime | Opt-in sessions, model routing, policy injection, explicit specialized-operation permission checks, successful-tool advancement, and bounded redacted model/tool flat and structured evidence are wired. |
 | OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
 | Codex and Senpi | Existing compatibility runtimes remain available, but they do not consume the SMMR config block yet. |
 
