@@ -16,7 +16,8 @@
   ],
   "pi": {
     "extensions": [
-      "./extensions/omo.js"
+      "./extensions/omo.js",
+      "./extensions/smmr.js"
     ],
     "skills": [
       "./skills"

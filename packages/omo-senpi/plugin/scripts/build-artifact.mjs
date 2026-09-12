@@ -36,7 +36,7 @@ export async function minifyBundle(output) {
 
 async function minifyBundleInProcess(output) {
   const result = await minify(await readFile(output, "utf8"), {
-    compress: true,
+    compress: { passes: 3 },
     mangle: true,
     module: true,
   })
