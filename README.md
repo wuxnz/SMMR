@@ -158,6 +158,21 @@ still the supported end-to-end installation surface. It provides OpenCode,
 Codex CLI, and Senpi editions with the existing OmO commands and configuration
 names.
 
+### Ask an agent to install SMMR
+
+Agents can install and configure SMMR by following the canonical
+[SMMR installation guide](docs/guide/smmr-installation.md). Give an agent this
+prompt:
+
+```text
+Install and configure SMMR for this project by following:
+https://raw.githubusercontent.com/wuxnz/SMMR/dev/docs/guide/smmr-installation.md
+
+Preserve unrelated user changes, keep SMMR explicitly opt-in, do not enable
+network or memory writes without asking me, and report what you installed and
+verified.
+```
+
 ### OpenCode / Ultimate edition
 
 ```bash
