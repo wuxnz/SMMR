@@ -17,6 +17,8 @@ describe("SmmrRuntimeSession", () => {
     })
     await expect(session.completeModel(model, { messages: [{ role: "user", content: "plan" }] })).resolves.toMatchObject({ content: "plan" })
     expect(model.requests[0]?.model).toBe("mock")
+    expect(session.snapshot()?.evidence[0]?.content).toBe("plan")
+    expect(session.snapshot()?.evidenceBundles[0]?.retrievedSources).toEqual(["mock"])
   })
 
   test("rejects model completion without an enabled configured session", async () => {
