@@ -92,7 +92,7 @@ slices are merged and independently testable:
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, startup-wired no-clobber migration, `.smmr/rules`, boulder-state, and team paths |
-| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, permission-checked execution and evidence capture after successful tool completions, and per-session operating-policy injection; host adapters still need to wire specialized external operations |
+| Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, pre-tool permission enforcement, model/tool evidence capture, and per-session operating-policy injection; host adapters still need to wire specialized external operations |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
 contract without changing legacy behavior when SMMR is disabled; Codex and
@@ -102,7 +102,7 @@ The implementation boundary is intentionally split:
 
 | Surface | Current state |
 | --- | --- |
-| Harness-neutral SMMR packages | Core controller, normalized model protocol, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested; runtime model steps and evidence handoffs are explicit. |
+| Harness-neutral SMMR packages | Core controller, normalized model protocol, validated evidence, atomic evidence-first completion, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested. |
 | OpenCode runtime | Opt-in sessions, model routing, policy injection, pre-tool permission checks, successful-tool advancement, and bounded redacted model/tool flat and structured evidence are wired. |
 | OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
 | Codex and Senpi | Existing compatibility runtimes remain available, but they do not consume the SMMR config block yet. |
