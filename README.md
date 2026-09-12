@@ -98,8 +98,10 @@ slices are merged and independently testable:
 | Host integration | In progress | opt-in `smmr` config, OpenCode startup boundary, per-chat `SmmrRuntimeSession` creation, deterministic next-skill planning, explicit research/network/memory-write permission routing, bounded structured evidence capture, and per-session operating-policy injection; provider-specific host adapters still need to wire specialized external operations |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
-contract without changing legacy behavior when SMMR is disabled; Codex and
-Senpi adapter consumption remains future work.
+contract without changing legacy behavior when SMMR is disabled. Codex and
+Senpi already load the unified typed configuration, including the `smmr` block,
+but runtime-session activation and SMMR operation wiring remain future work in
+those adapters.
 
 The implementation boundary is intentionally split:
 
@@ -108,7 +110,7 @@ The implementation boundary is intentionally split:
 | Harness-neutral SMMR packages | Core controller, normalized model protocol, validated evidence, atomic evidence-first completion, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested. |
 | OpenCode runtime | Opt-in sessions, model routing, policy injection, explicit specialized-operation permission checks, successful-tool advancement, and bounded redacted model/tool flat and structured evidence are wired. |
 | OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
-| Codex and Senpi | Existing compatibility runtimes remain available, but they do not consume the SMMR config block yet. |
+| Codex and Senpi | Existing compatibility runtimes load the unified typed config and expose the `smmr` settings to their harness views; they do not yet instantiate `SmmrRuntimeSession` or execute SMMR operations. |
 
 ## Architecture
 
@@ -200,7 +202,8 @@ alias does not rename or remove the existing OmO commands.
 
 These commands install the compatibility runtime. SMMR remains opt-in: add a
 root `smmr` block with `enabled: true` to activate the OpenCode per-chat
-session bridge. Codex and Senpi do not consume this block yet.
+session bridge. Codex and Senpi load the same typed block through the unified
+config surface, but their runtime session bridges are not enabled yet.
 
 For a project-local OpenCode opt-in, create `.smmr/smmr.jsonc` (or place the
 same block in the compatible `.omo/omo.jsonc` configuration):
@@ -258,7 +261,8 @@ base by default, while discovery falls back to existing `.omo/teams` data.
 Harness-neutral OpenClaw and ast-grep MCP runtime settings now prefer
 `SMMR_*` environment names while retaining their `OMO_*` fallbacks.
 These path changes are compatibility-aware library behavior; they do not yet
-make the SMMR controller the default host runtime.
+make the SMMR controller the default host runtime or activate it in Codex and
+Senpi.
 
 The config contract now reserves an opt-in root `smmr` block. Its resolved
 defaults are `enabled: false`, `allow_network: false`,
@@ -278,7 +282,8 @@ for the active session; restricted research, memory-write, and known
 network-capable tools are rejected before host tool execution, and failed
 completions record neither progress nor evidence.
 Specialized research, retrieval, verification, and memory operations still need
-dedicated adapter wiring.
+dedicated provider adapter wiring, and Codex/Senpi still need runtime-session
+activation beyond their existing config loading.
 
 ## Development
 
