@@ -83,7 +83,7 @@ slices are merged and independently testable:
 
 | Layer | Status | Current surface |
 | --- | --- | --- |
-| Controller | Implemented | `@smmr/core` deterministic workflow, budgets, loop detection, reflections, evidence |
+| Controller | Implemented | `@smmr/core` deterministic workflow, budgets, loop detection, reflections, evidence, and evidence-first completion enforcement |
 | Models | Implemented | `@smmr/models` normalized protocol, Ollama adapter, deterministic mock adapter |
 | Memory | Implemented | `@smmr/memory` policy, scoring, decay, bounded store; backed by existing memory foundation |
 | RAG | Implemented | `@smmr/rag` lexical ranking, document graph, related-test mapping, and bounded evidence context |
