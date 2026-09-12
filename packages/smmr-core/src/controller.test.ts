@@ -75,5 +75,7 @@ describe("SmmrController", () => {
     for (let i = 0; i < 12; i += 1) controller.advance()
     expect(() => controller.advance()).toThrow("Cannot complete without verified evidence")
     expect(controller.state).toBe("MEMORIZE")
+    expect(controller.snapshot().steps).toBe(12)
+    expect(controller.snapshot().transitions).toHaveLength(12)
   })
 })

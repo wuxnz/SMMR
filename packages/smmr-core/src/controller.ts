@@ -52,9 +52,9 @@ export class SmmrController {
   advance(): WorkflowState {
     if (isTerminalState(this.#state)) return this.#state
     if (this.#steps >= this.budget.maxSteps) return this.#transition("BLOCKED", "budget_exhausted")
-    this.#steps += 1
     const next = nextWorkflowState(this.#state)
     if (next === "COMPLETE") this.requireVerifiedEvidence()
+    this.#steps += 1
     return this.#transition(next, "advance")
   }
 
