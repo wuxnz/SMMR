@@ -4,6 +4,7 @@ import {
   advanceSmmrSessionAfterTool,
   assertSmmrSessionCanRunNextSkill,
   assertSmmrToolCanRun,
+  getSmmrToolOperation,
   removeDeletedSmmrSession,
 } from "./smmr-session-lifecycle"
 
@@ -41,6 +42,13 @@ describe("removeDeletedSmmrSession", () => {
 })
 
 describe("assertSmmrToolCanRun", () => {
+  test("maps specialized host tools to explicit SMMR operations", () => {
+    expect(getSmmrToolOperation("research_search")).toBe("research")
+    expect(getSmmrToolOperation("webfetch")).toBe("network")
+    expect(getSmmrToolOperation("memory_store")).toBe("memory-write")
+    expect(getSmmrToolOperation("grep")).toBe("local")
+  })
+
   test("rejects known network tools until network permission is enabled", async () => {
     const blocked = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
     await expect(assertSmmrToolCanRun(blocked, "webfetch")).rejects.toThrow("network permission is disabled")
@@ -55,6 +63,12 @@ describe("assertSmmrToolCanRun", () => {
   test("leaves local tools under the active skill permission", async () => {
     const session = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
     await expect(assertSmmrToolCanRun(session, "glob")).resolves.toBeUndefined()
+  })
+
+  test("enforces research and memory-write permissions", async () => {
+    const session = new SmmrRuntimeSession({ objective: "inspect", settings: { enabled: true } })
+    await expect(assertSmmrToolCanRun(session, "research_search")).rejects.toThrow("research permission is disabled")
+    await expect(assertSmmrToolCanRun(session, "memory_store")).rejects.toThrow("memory-write permission is disabled")
   })
 })
 
@@ -86,6 +100,22 @@ describe("advanceSmmrSessionAfterTool", () => {
     expect(content).not.toContain("secret-token")
     expect(content).not.toContain("abc123")
     expect(content).not.toContain("hunter2")
+  })
+
+  test("routes specialized tool evidence into matching bundle sections", async () => {
+    const sessions = new Map([
+      ["research", new SmmrRuntimeSession({ objective: "research", settings: { enabled: true, allow_research: true, allow_network: true } })],
+    ])
+    await expect(advanceSmmrSessionAfterTool({ sessionID: "research", tool: "research_search" }, { output: "citation" }, sessions)).resolves.toBe(true)
+    const researchBundle = sessions.get("research")?.snapshot()?.evidenceBundles[0]
+    expect(researchBundle?.externalDocs).toEqual(["research_search"])
+    expect(researchBundle?.relevantFiles).toEqual([])
+
+    const memorySessions = new Map([
+      ["memory", new SmmrRuntimeSession({ objective: "memory", settings: { enabled: true, allow_memory_writes: true } })],
+    ])
+    await expect(advanceSmmrSessionAfterTool({ sessionID: "memory", tool: "memory_store" }, { output: "stored" }, memorySessions)).resolves.toBe(true)
+    expect(memorySessions.get("memory")?.snapshot()?.evidenceBundles[0]?.previousExperiences).toEqual(["memory_store"])
   })
 })
 

@@ -12,6 +12,25 @@ export async function assertSmmrSessionCanRunNextSkill(session: SmmrRuntimeSessi
 }
 
 const NETWORK_TOOL_PATTERN = /(?:^|[_:-])(webfetch|web[-_]?search|browser|open[-_]?url|fetch[-_]?url)(?:$|[_:-])/i
+const RESEARCH_TOOL_PATTERN = /(?:^|[_:-])(research|cite|citation|web[-_]?search)(?:$|[_:-])/i
+const MEMORY_WRITE_TOOL_PATTERN = /(?:^|[_:-])(memory|remember|memorize|save[-_]?memory|store[-_]?memory)(?:$|[_:-])/i
+
+export type SmmrToolEvidenceSection = "local" | "external" | "memory"
+
+export function getSmmrToolOperation(tool?: string): "local" | "network" | "research" | "memory-write" {
+  if (typeof tool !== "string") return "local"
+  if (MEMORY_WRITE_TOOL_PATTERN.test(tool)) return "memory-write"
+  if (RESEARCH_TOOL_PATTERN.test(tool)) return "research"
+  if (NETWORK_TOOL_PATTERN.test(tool)) return "network"
+  return "local"
+}
+
+function getSmmrToolEvidenceSection(tool: string): SmmrToolEvidenceSection {
+  const operation = getSmmrToolOperation(tool)
+  if (operation === "research" || operation === "network") return "external"
+  if (operation === "memory-write") return "memory"
+  return "local"
+}
 
 export async function assertSmmrToolCanRun(
   session: SmmrRuntimeSession,
@@ -19,9 +38,7 @@ export async function assertSmmrToolCanRun(
 ): Promise<void> {
   const skill = session.nextSkill()
   if (skill !== undefined) await session.execute(skill.operation, () => undefined)
-  if (typeof tool === "string" && NETWORK_TOOL_PATTERN.test(tool)) {
-    await session.execute("network", () => undefined)
-  }
+  await session.execute(getSmmrToolOperation(tool), () => undefined)
 }
 
 export function removeDeletedSmmrSession(
@@ -69,9 +86,12 @@ export async function advanceSmmrSessionAfterTool(
       verified: true,
     }),
   )
+  const evidenceSection = getSmmrToolEvidenceSection(input.tool)
   session.recordEvidenceBundle(createEvidenceBundle({
     task: { description: session.objective },
-    relevantFiles: [input.tool],
+    relevantFiles: evidenceSection === "local" ? [input.tool] : [],
+    externalDocs: evidenceSection === "external" ? [input.tool] : [],
+    previousExperiences: evidenceSection === "memory" ? [input.tool] : [],
     retrievalContext: excerpt,
     retrievedSources: [input.tool],
   }))
