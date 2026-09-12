@@ -1,6 +1,6 @@
 import { SmmrController, type ControllerBudget, type ControllerSnapshot } from "./controller"
-import type { Evidence } from "./evidence"
-import type { EvidenceBundle } from "./evidence-bundle"
+import { createEvidence, type Evidence } from "./evidence"
+import { createEvidenceBundle, type EvidenceBundle } from "./evidence-bundle"
 import type { ModelAdapter, ModelRequest, ModelResponse } from "@smmr/models"
 import type { Reflection, WorkflowState } from "./workflow"
 import { getSmmrSkillForState, SMMR_SKILL_REGISTRY, type SmmrSkillDescriptor } from "./skills"
@@ -90,7 +90,23 @@ export class SmmrRuntimeSession {
   ): Promise<ModelResponse> {
     const model = this.model
     if (model === undefined) throw new Error("SMMR model is not configured")
-    return this.execute("local", () => adapter.complete({ ...request, model }))
+    const response = await this.execute("local", () => adapter.complete({ ...request, model }))
+    const content = response.content.slice(0, 12_000)
+    this.recordEvidence(createEvidence({
+      id: `model:${response.id}`,
+      kind: "observation",
+      claim: `Model ${response.model} completed a normalized request`,
+      content,
+      source: response.model,
+      confidence: 1,
+      verified: true,
+    }))
+    this.recordEvidenceBundle(createEvidenceBundle({
+      task: { description: this.objective },
+      retrievalContext: `### model:${response.model}\n${content}`,
+      retrievedSources: [response.model],
+    }))
+    return response
   }
 
   async execute<T>(operation: SmmrOperation, action: () => T | Promise<T>): Promise<T> {
