@@ -157,6 +157,7 @@ test("#given aggregate OMO plugin is enabled #when hooks are inspected #then she
 		"^Bash$",
 		"^create_goal$",
 		"^(spawn_agent|collaborationspawn_agent|collaboration\\.spawn_agent)$",
+		undefined,
 	]);
 	assert.match(text, /hook pre-tool-use-spawn/);
 	const admissionGroups = manifests.flatMap(({ hooks }) => hooks.hooks.PostToolUse ?? [])
