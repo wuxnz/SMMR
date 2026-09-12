@@ -9,6 +9,7 @@ import { isRecord } from "./senpi-settings"
 
 export const REQUIRED_PLUGIN_ARTIFACTS: readonly string[] = [
   join("extensions", "omo.js"),
+  join("extensions", "smmr.js"),
   join("extensions", "omo-task.js"),
   join("extensions", "omo-member.js"),
   join("extensions", "memory-run-supervisor.mjs"),

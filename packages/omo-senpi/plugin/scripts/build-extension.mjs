@@ -49,9 +49,11 @@ const pluginRoot = dirname(scriptDir)
 const packageRoot = dirname(pluginRoot)
 const repoRoot = join(packageRoot, "..", "..")
 const entryPath = join(packageRoot, "src", "extension", "bundled-index.ts")
+const smmrEntryPath = join(packageRoot, "src", "extension", "smmr.ts")
 const outputPath = process.env.OMO_SENPI_PLUGIN_OUTPUT === undefined
   ? join(pluginRoot, "extensions", "omo.js")
   : join(process.env.OMO_SENPI_PLUGIN_OUTPUT, "extensions", "omo.js")
+const smmrOutputPath = process.env.OMO_SENPI_PLUGIN_OUTPUT === undefined ? join(pluginRoot, "extensions", "smmr.js") : join(process.env.OMO_SENPI_PLUGIN_OUTPUT, "extensions", "smmr.js")
 const taskEntryPath = join(packageRoot, "src", "extension", "omo-task.ts")
 const taskOutputPath = process.env.OMO_SENPI_PLUGIN_OUTPUT === undefined ? join(pluginRoot, "extensions", "omo-task.js") : join(process.env.OMO_SENPI_PLUGIN_OUTPUT, "extensions", "omo-task.js")
 const memberEntryPath = join(repoRoot, "packages", "senpi-task", "src", "team", "member-extension", "index.ts")
@@ -74,7 +76,7 @@ const BUILD_SETTINGS = JSON.stringify({
   format: "esm",
   minifySyntax: true,
   minifyWhitespace: true,
-  minifyIdentifiers: false,
+  minifyIdentifiers: true,
   secondaryMinifier: "terser@5.44.0",
   loaderAliases: SENPI_LOADER_ALIASES,
 })
@@ -102,6 +104,8 @@ export async function buildExtension(options = {}) {
     ? advisorRuntimeOutputPath
     : join(dirname(output), "omo-init-deep-advisor.js"))
   const mainInputs = await buildEntry(entryPath, output, buildDefines)
+  const smmrOutput = options.smmrOutputPath ?? (options.outputPath === undefined ? smmrOutputPath : join(dirname(output), "smmr.js"))
+  const smmrInputs = await buildEntry(smmrEntryPath, smmrOutput, buildDefines)
   const taskInputs = await buildEntry(taskEntryPath, taskOutput, buildDefines)
   const memberInputs = await buildEntry(memberEntryPath, memberOutput, buildDefines)
   const supervisorInputs = await buildEntry(supervisorEntryPath, supervisorOutput, buildDefines)
@@ -111,7 +115,7 @@ export async function buildExtension(options = {}) {
   await Promise.all([
     stageRuntimePersonas(repoRoot, dirname(output)),
   ])
-  return { mainInputs, taskInputs, memberInputs, supervisorInputs, advisorRuntimeInputs }
+  return { mainInputs, smmrInputs, taskInputs, memberInputs, supervisorInputs, advisorRuntimeInputs }
 }
 
 async function buildEntry(entry, output, buildDefines) {
@@ -120,7 +124,7 @@ async function buildEntry(entry, output, buildDefines) {
   try {
     run(resolveBunExecutable(), [
       "build", entry, "--target", "node", "--format", "esm", "--outfile", output,
-      "--minify-syntax", "--minify-whitespace", `--metafile=${metafile}`,
+      "--minify-syntax", "--minify-whitespace", "--minify-identifiers", `--metafile=${metafile}`,
       ...Object.entries(buildDefines).flatMap(([name, value]) => ["--define", `${name}=${JSON.stringify(value)}`]),
       ...externalSpecifiers.flatMap((specifier) => ["--external", specifier]),
     ])
@@ -156,6 +160,9 @@ export async function checkExtensionCurrent(options = {}) {
     : join(dirname(output), "omo-init-deep-advisor.js"))
   const currentMain = await readBuiltEntry(output)
   if (currentMain === undefined) return { ok: false, reason: "missing-output", output }
+  const smmrOutput = options.smmrOutputPath ?? (options.outputPath === undefined ? smmrOutputPath : join(dirname(output), "smmr.js"))
+  const currentSmmr = await readBuiltEntry(smmrOutput)
+  if (currentSmmr === undefined) return { ok: false, reason: "missing-output", output: smmrOutput }
   const currentTask = await readBuiltEntry(taskOutput)
   if (currentTask === undefined) return { ok: false, reason: "missing-output", output: taskOutput }
   const currentMember = await readBuiltEntry(memberOutput)

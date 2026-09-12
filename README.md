@@ -98,7 +98,7 @@ slices are merged and independently testable:
 | Evaluation | Implemented | `@smmr/eval` trajectory recording, verification metrics, and aggregate run statistics |
 | Training | Implemented | `@smmr/training` deterministic filtering, SFT message conversion, and JSONL export scaffolds |
 | Identity foundation | In progress | additive launcher/env identity, canonical config reads, startup-wired no-clobber migration, `.smmr/rules`, boulder-state, and team paths |
-| Host integration | In progress | opt-in `smmr` config, OpenCode and Codex session boundaries, deterministic next-skill planning, explicit research/network/memory-write permission routing, snapshot persistence, bounded structured evidence capture, and per-session policy injection; Senpi and provider-specific host adapters remain in progress |
+| Host integration | In progress | opt-in `smmr` config, OpenCode, Codex, and Senpi session boundaries, deterministic next-skill planning, snapshot persistence, bounded structured evidence capture, and per-session policy injection; provider-specific adapters and Senpi pre-tool veto remain in progress |
 
 The SMMR packages remain harness-neutral. The OpenCode adapter now consumes the
 contract without changing legacy behavior when SMMR is disabled. Codex and
@@ -114,7 +114,7 @@ The implementation boundary is intentionally split:
 | Harness-neutral SMMR packages | Core controller, normalized model protocol, validated evidence, atomic evidence-first completion, resumable snapshot restoration, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested. |
 | OpenCode runtime | Opt-in sessions, model routing, policy injection, explicit specialized-operation permission checks, successful-tool advancement, and bounded redacted model/tool flat and structured evidence are wired. |
 | OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
-| Codex and Senpi | Codex loads the unified typed config and has an opt-in hook bridge for session policy, permissions, resumable state, and evidence; Senpi loads the config but does not yet instantiate `SmmrRuntimeSession`. |
+| Codex and Senpi | Both load the unified typed config and have opt-in bridges for session policy, resumable state, and evidence; Codex also has pre-tool permission checks. Senpi ships the SMMR bridge as a separate `extensions/smmr.js` entry so the aggregate extension stays within its size budget; reliable Senpi pre-tool veto and provider-specific adapters remain in progress. |
 
 ## Architecture
 
