@@ -90,7 +90,7 @@ export class SmmrController {
   }
 
   snapshot(): ControllerSnapshot {
-    return { state: this.#state, steps: this.#steps, retries: this.#retries, reflections: [...this.#reflections], transitions: [...this.#transitions], evidence: [...this.#evidence], evidenceBundles: this.#evidenceBundles.map((bundle) => createEvidenceBundle(bundle)), exhausted: this.#state === "BLOCKED" || this.#steps >= this.budget.maxSteps }
+    return { state: this.#state, steps: this.#steps, retries: this.#retries, reflections: [...this.#reflections], transitions: [...this.#transitions], evidence: this.#evidence.map((evidence) => ({ ...evidence })), evidenceBundles: this.#evidenceBundles.map((bundle) => createEvidenceBundle(bundle)), exhausted: this.#state === "BLOCKED" || this.#steps >= this.budget.maxSteps }
   }
 
   #transition(to: WorkflowState, reason: WorkflowTransition["reason"]): WorkflowState {
