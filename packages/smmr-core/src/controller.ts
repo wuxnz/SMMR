@@ -1,4 +1,4 @@
-import { isTerminalState, nextWorkflowState, type Reflection, type WorkflowState, type WorkflowTransition } from "./workflow"
+import { isTerminalState, nextWorkflowState, WORKFLOW_STATES, type Reflection, type WorkflowState, type WorkflowTransition } from "./workflow"
 import { createEvidenceBundle, type EvidenceBundle } from "./evidence-bundle"
 import type { Evidence } from "./evidence"
 
@@ -37,6 +37,22 @@ export class SmmrController {
       if (!Number.isInteger(value) || value < 1) throw new Error(`Invalid controller budget: ${name}`)
     }
     this.#clock = options.clock ?? (() => new Date().toISOString())
+  }
+  static fromSnapshot(options: ControllerOptions, snapshot: ControllerSnapshot): SmmrController {
+    if (!WORKFLOW_STATES.includes(snapshot.state)) throw new Error(`Invalid controller snapshot state: ${snapshot.state}`)
+    if (!Number.isInteger(snapshot.steps) || snapshot.steps < 0) throw new Error("Invalid controller snapshot steps")
+    if (!Number.isInteger(snapshot.retries) || snapshot.retries < 0) throw new Error("Invalid controller snapshot retries")
+    const controller = new SmmrController(options)
+    if (snapshot.steps > controller.budget.maxSteps) throw new Error("Controller snapshot exceeds step budget")
+    if (snapshot.retries > controller.budget.maxRetries) throw new Error("Controller snapshot exceeds retry budget")
+    controller.#state = snapshot.state
+    controller.#steps = snapshot.steps
+    controller.#retries = snapshot.retries
+    controller.#reflections = snapshot.reflections.map((reflection) => ({ ...reflection }))
+    controller.#transitions = snapshot.transitions.map((transition) => ({ ...transition }))
+    for (const evidence of snapshot.evidence) controller.recordEvidence({ ...evidence })
+    controller.#evidenceBundles = snapshot.evidenceBundles.map((bundle) => createEvidenceBundle(bundle))
+    return controller
   }
   get state(): WorkflowState { return this.#state }
   recordEvidence(evidence: Evidence): void {

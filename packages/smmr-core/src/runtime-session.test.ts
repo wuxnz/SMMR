@@ -54,6 +54,15 @@ describe("SmmrRuntimeSession", () => {
     expect(session.nextSkill()?.name).toBe("smmr-repository-analysis")
   })
 
+  test("resumes an enabled session from a persisted controller snapshot", () => {
+    const first = new SmmrRuntimeSession({ objective: "resume", settings: { enabled: true } })
+    first.advance()
+    const resumed = new SmmrRuntimeSession({ objective: "resume", settings: { enabled: true }, snapshot: first.snapshot() })
+    expect(resumed.snapshot()?.state).toBe("UNDERSTAND")
+    expect(resumed.snapshot()?.steps).toBe(1)
+    expect(resumed.nextSkill()?.name).toBe("smmr-repository-analysis")
+  })
+
   test("enforces operation permissions before running adapter work", async () => {
     const session = new SmmrRuntimeSession({
       objective: "research a provider",
