@@ -60,4 +60,20 @@ describe("SmmrController", () => {
     const controller = new SmmrController({ objective: "safe" })
     expect(() => controller.complete()).toThrow("Cannot complete from DISCOVER")
   })
+
+  test("requires verified evidence before explicit completion", () => {
+    const controller = new SmmrController({ objective: "safe" })
+    for (let i = 0; i < 12; i += 1) controller.advance()
+    expect(controller.state).toBe("MEMORIZE")
+    expect(() => controller.complete()).toThrow("Cannot complete without verified evidence")
+    controller.recordEvidence(createEvidence({ id: "verified", kind: "test", claim: "verified", content: "ok", confidence: 1, verified: true }))
+    expect(controller.complete()).toBe("COMPLETE")
+  })
+
+  test("does not automatically enter COMPLETE without evidence", () => {
+    const controller = new SmmrController({ objective: "safe" })
+    for (let i = 0; i < 12; i += 1) controller.advance()
+    expect(() => controller.advance()).toThrow("Cannot complete without verified evidence")
+    expect(controller.state).toBe("MEMORIZE")
+  })
 })

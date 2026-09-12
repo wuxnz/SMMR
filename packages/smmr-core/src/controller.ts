@@ -53,7 +53,9 @@ export class SmmrController {
     if (isTerminalState(this.#state)) return this.#state
     if (this.#steps >= this.budget.maxSteps) return this.#transition("BLOCKED", "budget_exhausted")
     this.#steps += 1
-    return this.#transition(nextWorkflowState(this.#state), "advance")
+    const next = nextWorkflowState(this.#state)
+    if (next === "COMPLETE") this.requireVerifiedEvidence()
+    return this.#transition(next, "advance")
   }
 
   retry(action: string): WorkflowState {
@@ -67,8 +69,16 @@ export class SmmrController {
   }
 
   complete(): WorkflowState {
-    if (this.#state === "VERIFY" || this.#state === "REVIEW" || this.#state === "MEMORIZE") return this.#transition("COMPLETE", "advance")
+    if (this.#state === "VERIFY" || this.#state === "REVIEW" || this.#state === "MEMORIZE") {
+      this.requireVerifiedEvidence()
+      return this.#transition("COMPLETE", "advance")
+    }
     throw new Error(`Cannot complete from ${this.#state}`)
+  }
+
+  private requireVerifiedEvidence(): void {
+    if (this.#evidence.some((evidence) => evidence.verified) || this.#evidenceBundles.length > 0) return
+    throw new Error("Cannot complete without verified evidence")
   }
 
   snapshot(): ControllerSnapshot {
