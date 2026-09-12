@@ -48,6 +48,18 @@ describe("SmmrController", () => {
     expect(controller.snapshot().evidence[0]?.content).toBe("ok")
   })
 
+  test("restores workflow counters and evidence from a snapshot", () => {
+    const original = new SmmrController({ objective: "resume" })
+    original.recordEvidence(createEvidence({ id: "e1", kind: "test", claim: "verified", content: "ok", confidence: 1, verified: true }))
+    original.advance()
+    const restored = SmmrController.fromSnapshot({ objective: "resume" }, original.snapshot())
+    expect(restored.snapshot().state).toBe("UNDERSTAND")
+    expect(restored.snapshot().steps).toBe(1)
+    expect(restored.snapshot().evidence[0]?.content).toBe("ok")
+    restored.advance()
+    expect(restored.snapshot().state).toBe("RESEARCH")
+  })
+
   test("walks the deterministic workflow and preserves evidence", () => {
     const controller = new SmmrController({ objective: "fix the bug", clock: () => "now" })
     controller.recordEvidence(createEvidence({ id: "e1", kind: "test", claim: "test exists", content: "ok", confidence: 1, verified: true, recordedAt: "now" }))

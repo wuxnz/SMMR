@@ -17,6 +17,7 @@ export interface SmmrRuntimeSessionOptions {
   readonly objective: string
   readonly settings?: SmmrRuntimeSettings
   readonly budget?: Partial<ControllerBudget>
+  readonly snapshot?: ControllerSnapshot
   readonly clock?: () => string
 }
 
@@ -51,7 +52,9 @@ export class SmmrRuntimeSession {
       }
       if (options.budget !== undefined) controllerOptions.budget = options.budget
       if (options.clock !== undefined) controllerOptions.clock = options.clock
-      this.controller = new SmmrController(controllerOptions)
+      this.controller = options.snapshot === undefined
+        ? new SmmrController(controllerOptions)
+        : SmmrController.fromSnapshot(controllerOptions, options.snapshot)
     }
   }
 

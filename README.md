@@ -77,7 +77,10 @@ own this session without importing a harness API.
 The session exposes bounded `advance`, `retry`, `reflect`, and `recordEvidence`
 operations, plus `runNextSkill` for permission-checked execution of the current
 skill with post-success advancement. Adapters must pass external work through
-this boundary instead of silently bypassing SMMR permissions.
+this boundary instead of silently bypassing SMMR permissions. Persisted
+`ControllerSnapshot` values can be restored through the same runtime boundary,
+so a host can resume a per-session workflow without losing its counters,
+transitions, or evidence.
 
 ## Current status
 
@@ -105,7 +108,7 @@ The implementation boundary is intentionally split:
 
 | Surface | Current state |
 | --- | --- |
-| Harness-neutral SMMR packages | Core controller, normalized model protocol, validated evidence, atomic evidence-first completion, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested. |
+| Harness-neutral SMMR packages | Core controller, normalized model protocol, validated evidence, atomic evidence-first completion, resumable snapshot restoration, memory, retrieval, execution, research, evaluation, training, and snapshot-isolated Evidence Bundle contracts are implemented and independently tested. |
 | OpenCode runtime | Opt-in sessions, model routing, policy injection, explicit specialized-operation permission checks, successful-tool advancement, and bounded redacted model/tool flat and structured evidence are wired. |
 | OpenCode specialized operations | Direct retrieval, research-provider, verification, and durable-memory adapters remain in progress. |
 | Codex and Senpi | Existing compatibility runtimes remain available, but they do not consume the SMMR config block yet. |
