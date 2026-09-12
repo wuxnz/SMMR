@@ -13,6 +13,18 @@ describe("SmmrController", () => {
     expect(controller.snapshot().evidenceBundles[0]?.relevantFiles).toEqual(["src/index.ts"])
   })
 
+  test("rejects structurally invalid evidence", () => {
+    const controller = new SmmrController({ objective: "inspect" })
+    const valid = createEvidence({ id: "e1", kind: "test", claim: "verified", content: "ok", confidence: 1, verified: true })
+    expect(() => controller.recordEvidence({ ...valid, id: "" })).toThrow("Evidence id")
+    expect(() => controller.recordEvidence({ ...valid, claim: " " })).toThrow("Evidence claim")
+    expect(() => controller.recordEvidence({ ...valid, content: " " })).toThrow("Evidence content")
+    expect(() => controller.recordEvidence({ ...valid, confidence: 2 })).toThrow("confidence")
+    expect(() => controller.recordEvidence({ ...valid, confidence: Number.NaN })).toThrow("confidence")
+    controller.recordEvidence(valid)
+    expect(controller.snapshot().evidence).toHaveLength(1)
+  })
+
   test("isolates nested bundle state in snapshots", () => {
     const controller = new SmmrController({ objective: "inspect" })
     controller.recordEvidenceBundle(createEvidenceBundle({

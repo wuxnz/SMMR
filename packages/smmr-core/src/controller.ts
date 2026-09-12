@@ -39,7 +39,15 @@ export class SmmrController {
     this.#clock = options.clock ?? (() => new Date().toISOString())
   }
   get state(): WorkflowState { return this.#state }
-  recordEvidence(evidence: Evidence): void { this.#evidence.push(evidence) }
+  recordEvidence(evidence: Evidence): void {
+    if (evidence.id.trim().length === 0) throw new Error("Evidence id must not be empty")
+    if (evidence.claim.trim().length === 0) throw new Error("Evidence claim must not be empty")
+    if (evidence.content.trim().length === 0) throw new Error("Evidence content must not be empty")
+    if (!Number.isFinite(evidence.confidence) || evidence.confidence < 0 || evidence.confidence > 1) {
+      throw new Error("Evidence confidence must be between 0 and 1")
+    }
+    this.#evidence.push(evidence)
+  }
   recordEvidenceBundle(bundle: EvidenceBundle): void { this.#evidenceBundles.push(createEvidenceBundle(bundle)) }
 
   reflect(reflection: Omit<Reflection, "state">): Reflection {
